@@ -1,8 +1,14 @@
--lib utest
--cp .
 -cp vscode_debugadapter_haxe
+-cp src
+-main fdbAdapter.Main
+-js bin/adapter.js
+
+--next 
+-lib utest
 -main test.TestAll
+-cp vscode_debugadapter_haxe
+-cp .
 -js bin/test.js
 
-#--next
-#-cmd "node bin/test.js"
+--next
+-cmd "node bin/test.js"

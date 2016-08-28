@@ -1,5 +1,7 @@
 package test;
 import utest.Assert;
+import testSupport.DebugClient;
+import js.Promise;
 
 class AutomatedTests
 {
@@ -11,13 +13,23 @@ class AutomatedTests
 
     @:keep public function setup() 
     {
-       dc = new DebugClient('node', './out/node/nodeDebug.js', 'node');
-	   return dc.start();
+       dc = new DebugClient('node', './bin/adapter.js', 'node');
+	   dc.start();
     }
 
-    @:keep public function testFieldIsSome() 
+    public function testTerminated() 
     {
-        Assert.isTrue(true,"testing works");
+        var done = Assert.createAsync(300);
+        var p = Promise.all([
+            dc.configurationSequence(),
+            dc.launch({ program: "test/sample/sample.swf" }),
+            dc.waitForEvent('terminated')
+        ]);
+        p.then(function(r) {
+            trace( r );
+            Assert.notNull(r);
+            done();
+        });
     }
 
     @:keep public function teardown() 
