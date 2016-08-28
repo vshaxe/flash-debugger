@@ -1,2 +1,6 @@
+-lib utest
 -main test.TestAll
 -js bin/test.js
+
+#--next
+#-cmd "node bin/test.js"

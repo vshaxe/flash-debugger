@@ -1,0 +1,22 @@
+{
+	"name": "vscode-fdb-adapter",
+	"description": "Flash debuger adapter for vscode",
+	"version": "0.0.1",
+	"author": "nulldivide@gmail.com",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nulld/vscode_fdb_adapter.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nulld/vscode_fdb_adapter/issues"
+	},
+	"main": "./bin/test.js",
+	"dependencies": {
+		"vscode-debugprotocol": "^1.12.0-pre.0",
+        "vscode-debugadapter": "^1.12.0-pre.1",
+        "vscode-debugadapter-testsupport" : "^1.11.0"
+	},
+	"devDependencies": {},
+	"scripts": {}
+}
