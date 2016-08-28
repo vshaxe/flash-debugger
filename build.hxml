@@ -1,4 +1,6 @@
 -lib utest
+-cp .
+-cp vscode_debugadapter_haxe
 -main test.TestAll
 -js bin/test.js
 

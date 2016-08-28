@@ -3,6 +3,7 @@ import utest.Assert;
 
 class AutomatedTests
 {
+    var dc:DebugClient;
     public function new()
     {
 
@@ -10,7 +11,8 @@ class AutomatedTests
 
     @:keep public function setup() 
     {
-       
+       dc = new DebugClient('node', './out/node/nodeDebug.js', 'node');
+	   return dc.start();
     }
 
     @:keep public function testFieldIsSome() 
@@ -20,6 +22,6 @@ class AutomatedTests
 
     @:keep public function teardown() 
     {
-       
+       dc.stop();
     }
-}
+} 
