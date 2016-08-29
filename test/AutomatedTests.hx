@@ -13,23 +13,22 @@ class AutomatedTests
 
     @:keep public function setup() 
     {
-       dc = new DebugClient('node', './bin/adapter.js', 'node');
-	   dc.start();
+       dc = new DebugClient('node', 'bin/adapter.js', 'node');
+	   var p = dc.start();
     }
 
     public function testTerminated() 
     {
-        var done = Assert.createAsync(300);
+        var done = Assert.createAsync(3000);
         var p = Promise.all([
-            dc.configurationSequence(),
-            dc.launch({ program: "test/sample/sample.swf" }),
-            dc.waitForEvent('terminated')
-        ]);
-        p.then(function(r) {
-            trace( r );
-            Assert.notNull(r);
-            done();
-        });
+             dc.initializeRequest(),
+             dc.waitForEvent("initialized")
+         ]).then( function(r)
+         {
+             trace( r );
+             Assert.notNull(r);
+             done();
+         } );
     }
 
     @:keep public function teardown() 

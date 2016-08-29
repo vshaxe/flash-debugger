@@ -6,14 +6,13 @@ class FDBAdapter extends adapter.DebugSession
 {
     public function new()
     {
-        trace( "created" );
         super();
     }
 
     override function initializeRequest(response:InitializeResponse, args:InitializeRequestArguments):Void
     {
         
-        sendEvent(new InitializedEvent());
+        this.sendEvent(new InitializedEvent());
 		// This debug adapter implements the configurationDoneRequest.
 		response.body.supportsConfigurationDoneRequest = true;
 
@@ -23,6 +22,6 @@ class FDBAdapter extends adapter.DebugSession
 		// make VS Code to show a 'step back' button
 		response.body.supportsStepBack = true;
         trace( 'got initialize request: $response');
-        sendResponse( response );
+        this.sendResponse( response );
     }
 }

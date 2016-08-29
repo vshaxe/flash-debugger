@@ -11,5 +11,5 @@
 -cp .
 -js bin/test.js
 
---next
--cmd "node bin/test.js"
+#--next
+#-cmd "node bin/test.js"
