@@ -19,15 +19,18 @@ class AutomatedTests
 
     public function testTerminated() 
     {
-        var done = Assert.createAsync(3000);
+        var done = Assert.createAsync(10000);
         var p = Promise.all([
-             dc.initializeRequest(),
-             dc.waitForEvent("initialized")
+             dc.initializeRequest()
+             ,dc.waitForEvent("initialized")
          ]).then( function(r)
          {
              trace( r );
              Assert.notNull(r);
              done();
+         } ).catchError(function(e) {
+             trace (e);
+             done(); 
          } );
     }
 
