@@ -21,8 +21,9 @@ class AutomatedTests
     {
         var done = Assert.createAsync(10000);
         var p = Promise.all([
-             dc.initializeRequest()
-             ,dc.waitForEvent("initialized")
+             //dc.initializeRequest()
+             //, dc.waitForEvent("initialized")
+             dc.hitBreakpoint( {}, {verified : true, path: "Test.hx",line:10}, {verified : true, path: "Test.hx", line:10})
          ]).then( function(r)
          {
              trace( r );
