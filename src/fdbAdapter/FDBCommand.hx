@@ -183,8 +183,5 @@ class ContinueCommand extends FDBCommand
     {
         trace( 'Continue result: $lines' );
         //proc.sendResponse(response);
-
-        //[[trace] MainScreenView.hx:24: Play!,Breakpoint 1, GameRound() at GameRound.hx:18, 18            game = gameFactory(reportAnswer);]
-        done = true;
     }
 }

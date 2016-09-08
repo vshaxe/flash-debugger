@@ -1,8 +1,9 @@
 package fdbAdapter;
 import protocol.debug.Types;
 import adapter.DebugSession;
+import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
+import adapter.DebugSession.Thread as ThreadImpl;
 import js.node.child_process.ChildProcess as ChildProcessObject;
-import js.node.child_process.ChildProcess.ChildProcessEvent;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable;
@@ -105,21 +106,31 @@ class FDBAdapter extends adapter.DebugSession
         breakpointsManager.setBreakPointsRequest(response, args );
     }
 
-     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments):Void
-     {
-         sendResponse(response);
-         queueCommand( new ContinueCommand(this));
-     }
+    override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments):Void
+    {
+        sendResponse(response);
+        queueCommand( new ContinueCommand(this));
+    }
 
-     function checkQueue()
-     {
+    override function threadsRequest(response:ThreadsResponse):Void
+    {
+        response.body = {
+            threads: [
+                new ThreadImpl(1, "thread 1")
+            ]
+        };
+        sendResponse(response);
+    }
+
+    function checkQueue()
+    {
         if ((currentCommand == null) && (queueHead != null)) 
         {
             currentCommand = queueHead;
             queueHead = currentCommand.next;
             executeCurrentCommand();
         }
-     }
+    }
 
     function executeCurrentCommand()
     {        
@@ -174,6 +185,15 @@ class FDBAdapter extends adapter.DebugSession
     function globalStateProcess(lines:Array<String>)
     {
         trace('globalStateProcess: $lines');
+        for (line in lines)
+        {
+            //Breakpoint 1, GameRound() at GameRound.hx:18
+            var r = ~/Breakpoint ([0-9]+), (.*) at ([0-9A-Za-z\.]+).hx:([0-9]+)/;
+            if (r.match(line))
+            {
+                this.sendEvent(new StoppedEventImpl("breakpoint", 1));
+            }
+        }
 
     }
 
