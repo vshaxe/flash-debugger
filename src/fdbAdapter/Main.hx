@@ -4,8 +4,8 @@ import js.node.Fs;
 class Main
 {
     public static function main() {
-        FDBAdapter.setup( { fdbJarPath : "C:\\Program Files (x86)\\FlashDevelop\\Tools\\flexlibs\\lib\\fdb.jar"
-                          , javaPath : "C:\\Program Files\\Java\\jdk1.8.0_65\\bin\\java"});
+        FDBAdapter.setup( { fdbCmd : "D:\\flex_sdk_4.6\\bin\\fdb.exe"
+                          , fdbCmdParams : []});
         DebugSession.run( FDBAdapter );
         setupTrace();
     }

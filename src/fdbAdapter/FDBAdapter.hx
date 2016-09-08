@@ -12,9 +12,11 @@ import fdbAdapter.FDBCommand;
 
 
 typedef AdapterConfig = {
-    var javaPath : String;
-    var fdbJarPath : String;
+    var fdbCmdParams : Array<String>;
+    var fdbCmd : String;
 }
+
+
 
 class FDBAdapter extends adapter.DebugSession
 {
@@ -26,13 +28,41 @@ class FDBAdapter extends adapter.DebugSession
 
     var proc:ChildProcessObject;
     var buffer:Buffer;
-    var commandsQueueHead:FDBCommand;
+    var queueHead:FDBCommand;
+    var queueTail:FDBCommand;
     var currentCommand:FDBCommand;
+    var breakpointsManager:BreakpointsManager;
 
     public function new()
     {
         super();
         buffer = new Buffer(0);
+        breakpointsManager = new BreakpointsManager(this);
+    }
+
+    public function queueCommand( command:FDBCommand )
+    {
+        // add to the queue
+        if (queueHead == null) {
+            queueHead = queueTail = command;
+        } else {
+            queueTail.next = command;
+            command.prev = queueTail;
+            queueTail = command;
+        }
+        checkQueue();
+    }
+
+    override function dispatchRequest(request: Request<Dynamic>): Void 
+    {
+        trace( request );
+        super.dispatchRequest(request);
+    }
+
+    override function sendResponse(response:protocol.debug.Response<Dynamic>):Void
+    {
+        trace('SEND RESPONSE: $response' );
+        super.sendResponse(response);
     }
 
     override function initializeRequest(response:InitializeResponse, args:InitializeRequestArguments):Void
@@ -45,7 +75,7 @@ class FDBAdapter extends adapter.DebugSession
             return;
         }
 
-        proc = ChildProcess.spawn(config.javaPath, ["-jar", config.fdbJarPath], {env: {}});
+        proc = ChildProcess.spawn(config.fdbCmd, config.fdbCmdParams, {env: {}});
         proc.stdout.on(ReadableEvent.Data,  onData );
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
 
@@ -64,64 +94,87 @@ class FDBAdapter extends adapter.DebugSession
         this.sendResponse( response );
     }
 
+    override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments):Void
+    {
+        queueCommand( new LaunchCommand(this, response, cast args) );
+    }
+
+
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments)
     {
-        trace('setBreakPointsRequest: $args');
-        for (i in 0...args.breakpoints.length)
-        {
-            queueCommand(new SetBreakpointCommand(this, args, i));
-        }
-
+        breakpointsManager.setBreakPointsRequest(response, args );
     }
 
-    function queueCommand( command:FDBCommand )
-    {
-        if (currentCommand == null)
+     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments):Void
+     {
+         sendResponse(response);
+         queueCommand( new ContinueCommand(this));
+     }
+
+     function checkQueue()
+     {
+        if ((currentCommand == null) && (queueHead != null)) 
         {
-            commandsQueueHead = currentCommand = command;
+            currentCommand = queueHead;
+            queueHead = currentCommand.next;
             executeCurrentCommand();
         }
-        else
-        {
-            trace("!!!!!!!!!!!!!");            
-            currentCommand.next = command;
-            command.prev = currentCommand;
-        }
-        
-    }
+     }
 
     function executeCurrentCommand()
     {        
-        trace("executeCurrentCommand");
         currentCommand.execute(proc);
+        if (currentCommand.done)
+            removeCurrentCommand();
     }
 
     function removeCurrentCommand()
     {
-        trace("removeCurrentCommand");
-        var next = currentCommand.next;
         currentCommand = null;
-        trace( next );
-        if (next != null)
-        {
-            currentCommand = next;
-            executeCurrentCommand();
-        }        
+        checkQueue();
+    }
+
+    function removeCommand(command:FDBCommand):Void
+    {
+        if (command == queueHead)
+            queueHead = command.next;
+        if (command == queueTail)
+            queueTail = command.prev;
+        if (command.prev != null)
+            command.prev.next = command.next;
+        if (command.next != null)
+            command.next.prev = command.prev;
     }
 
     function onData( buf:Buffer )
     {
-        
+            
         var newLength = buffer.length + buf.length;
         buffer = Buffer.concat([buffer,buf], newLength);
-        var string = buffer.toString();        
+        var string = buffer.toString();
         if (string.substr(-6) == "(fdb) ")
         {
             var fdbOutput = string.substring(0, string.length - 6 );
+            var lines = fdbOutput.split("\r\n");
+            lines.pop();
             buffer = new Buffer(0);
-            currentCommand.processResult( fdbOutput );
-            removeCurrentCommand();            
+            if (currentCommand != null)
+            {
+                currentCommand.processFDBOutput(proc, lines );
+                if (currentCommand.done)
+                    removeCurrentCommand();
+            }            
+            else 
+            {
+                globalStateProcess( lines );
+            }
         }
+    }
+
+    function globalStateProcess(lines:Array<String>)
+    {
+        trace('globalStateProcess: $lines');
+
     }
 
 }
