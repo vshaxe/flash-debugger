@@ -1,23 +1,15 @@
 package fdbAdapter;
+
 import protocol.debug.Types;
 import adapter.DebugSession;
-import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 import adapter.DebugSession.Thread as ThreadImpl;
-import js.node.child_process.ChildProcess as ChildProcessObject;
-import js.node.Buffer;
-import js.node.ChildProcess;
-import js.node.stream.Readable;
-import fdbAdapter.FDBCommand;
-
-
-
+import fdbAdapter.commands.DebuggerCommand;
+import fdbAdapter.commands.fdb.*;
+import fdbAdapter.FDBServer.FDBConfig;
 
 typedef AdapterConfig = {
-    var fdbCmdParams : Array<String>;
-    var fdbCmd : String;
+    var fdbConfig : FDBConfig;
 }
-
-
 
 class FDBAdapter extends adapter.DebugSession
 {
@@ -27,31 +19,13 @@ class FDBAdapter extends adapter.DebugSession
         FDBAdapter.config = config;
     }
 
-    var proc:ChildProcessObject;
-    var buffer:Buffer;
-    var queueHead:FDBCommand;
-    var queueTail:FDBCommand;
-    var currentCommand:FDBCommand;
     var breakpointsManager:BreakpointsManager;
+    var debugger:IDebugger;
+    var sourcePath:String;
 
     public function new()
     {
         super();
-        buffer = new Buffer(0);
-        breakpointsManager = new BreakpointsManager(this);
-    }
-
-    public function queueCommand( command:FDBCommand )
-    {
-        // add to the queue
-        if (queueHead == null) {
-            queueHead = queueTail = command;
-        } else {
-            queueTail.next = command;
-            command.prev = queueTail;
-            queueTail = command;
-        }
-        checkQueue();
     }
 
     override function dispatchRequest(request: Request<Dynamic>): Void 
@@ -75,13 +49,10 @@ class FDBAdapter extends adapter.DebugSession
             this.sendResponse( response );
             return;
         }
+        debugger = new FDBServer( config.fdbConfig, this );
+        breakpointsManager = new BreakpointsManager(this, debugger);
 
-        proc = ChildProcess.spawn(config.fdbCmd, config.fdbCmdParams, {env: {}});
-        proc.stdout.on(ReadableEvent.Data,  onData );
-        proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
-
-        queueCommand( new StartFDBCommand(this) );
-      
+        debugger.start();
         // this.sendEvent(new InitializedEvent());
 		// This debug adapter implements the configurationDoneRequest.
 		response.body.supportsConfigurationDoneRequest = true;
@@ -97,7 +68,12 @@ class FDBAdapter extends adapter.DebugSession
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments):Void
     {
-        queueCommand( new LaunchCommand(this, response, cast args) );
+        var customArgs:{
+            var sourcePath:String;
+        } = cast args;
+
+        sourcePath = customArgs.sourcePath;
+        debugger.queueCommand(new Launch(this, debugger, response, cast args));
     }
 
 
@@ -109,7 +85,7 @@ class FDBAdapter extends adapter.DebugSession
     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments):Void
     {
         sendResponse(response);
-        queueCommand( new ContinueCommand(this));
+        debugger.queueCommand(new Continue(this,debugger));
     }
 
     override function threadsRequest(response:ThreadsResponse):Void
@@ -122,79 +98,8 @@ class FDBAdapter extends adapter.DebugSession
         sendResponse(response);
     }
 
-    function checkQueue()
+    override function stackTraceRequest(response:StackTraceResponse, args:StackTraceArguments):Void
     {
-        if ((currentCommand == null) && (queueHead != null)) 
-        {
-            currentCommand = queueHead;
-            queueHead = currentCommand.next;
-            executeCurrentCommand();
-        }
+        debugger.queueCommand( new StackTrace(this, debugger, response, sourcePath));
     }
-
-    function executeCurrentCommand()
-    {        
-        currentCommand.execute(proc);
-        if (currentCommand.done)
-            removeCurrentCommand();
-    }
-
-    function removeCurrentCommand()
-    {
-        currentCommand = null;
-        checkQueue();
-    }
-
-    function removeCommand(command:FDBCommand):Void
-    {
-        if (command == queueHead)
-            queueHead = command.next;
-        if (command == queueTail)
-            queueTail = command.prev;
-        if (command.prev != null)
-            command.prev.next = command.next;
-        if (command.next != null)
-            command.next.prev = command.prev;
-    }
-
-    function onData( buf:Buffer )
-    {
-            
-        var newLength = buffer.length + buf.length;
-        buffer = Buffer.concat([buffer,buf], newLength);
-        var string = buffer.toString();
-        if (string.substr(-6) == "(fdb) ")
-        {
-            var fdbOutput = string.substring(0, string.length - 6 );
-            var lines = fdbOutput.split("\r\n");
-            lines.pop();
-            buffer = new Buffer(0);
-            if (currentCommand != null)
-            {
-                currentCommand.processFDBOutput(proc, lines );
-                if (currentCommand.done)
-                    removeCurrentCommand();
-            }            
-            else 
-            {
-                globalStateProcess( lines );
-            }
-        }
-    }
-
-    function globalStateProcess(lines:Array<String>)
-    {
-        trace('globalStateProcess: $lines');
-        for (line in lines)
-        {
-            //Breakpoint 1, GameRound() at GameRound.hx:18
-            var r = ~/Breakpoint ([0-9]+), (.*) at ([0-9A-Za-z\.]+).hx:([0-9]+)/;
-            if (r.match(line))
-            {
-                this.sendEvent(new StoppedEventImpl("breakpoint", 1));
-            }
-        }
-
-    }
-
 }

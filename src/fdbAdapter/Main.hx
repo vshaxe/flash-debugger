@@ -4,8 +4,10 @@ import js.node.Fs;
 class Main
 {
     public static function main() {
-        FDBAdapter.setup( { fdbCmd : "D:\\flex_sdk_4.6\\bin\\fdb.exe"
-                          , fdbCmdParams : []});
+        FDBAdapter.setup( {fdbConfig : { 
+            fdbCmd : "D:\\flex_sdk_4.6\\bin\\fdb.exe"
+            , fdbCmdParams : []
+        }});
         DebugSession.run( FDBAdapter );
         setupTrace();
     }
