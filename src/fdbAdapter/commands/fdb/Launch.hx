@@ -15,11 +15,11 @@ class Launch extends DebuggerCommand
     var args:FDBLaunchRequestArguments;
     var response:LaunchResponse;
 
-    public function new(protocol:ProtocolServer, debugger:IDebugger, response:LaunchResponse, args:FDBLaunchRequestArguments)
+    public function new(context:Context, response:LaunchResponse, args:FDBLaunchRequestArguments)
     {
         this.args = args;
         this.response = response;
-        super(protocol, debugger);
+        super(context);
     }
 
     override function execute()
@@ -34,7 +34,7 @@ class Launch extends DebuggerCommand
         if (matchSWFConnected( matchingOutputLine ))
         {
             protocol.sendResponse( response );
-            done = true;
+            setDone();
         }
         else
             trace( 'Launch FAILED: [ $lines ]');

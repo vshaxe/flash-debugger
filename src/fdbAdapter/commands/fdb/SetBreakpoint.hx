@@ -1,23 +1,16 @@
 package fdbAdapter.commands.fdb;
 
 import fdbAdapter.commands.DebuggerCommand;
-import adapter.ProtocolServer;
 import protocol.debug.Types;
-
-typedef SetBreakpointResult = {
-    id:Int
-    , file:String
-    , line:Int
-}
 
 class SetBreakpoint extends DebuggerCommand
 {
     var breakpoint:Breakpoint;
-    
-    public function new(protocol:ProtocolServer, debugger:IDebugger, breakpoint:Breakpoint ) 
+
+    public function new(context:Context, breakpoint:Breakpoint ) 
     {
         this.breakpoint = breakpoint;
-        super( protocol, debugger );
+        super( context );
     }
 
     override function execute()
@@ -42,6 +35,6 @@ class SetBreakpoint extends DebuggerCommand
         else
             trace( 'SetBreakpoint FAILED: [ $lines ]');
 
-        done = true;
+        setDone();
     }
 }

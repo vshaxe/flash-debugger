@@ -8,14 +8,11 @@ import fdbAdapter.FDBAdapter;
 
 class BreakpointsManager
 {
-    var breakpoints:Array<Breakpoint> = [];
-    var protocol:FDBAdapter;
-    var debugger:IDebugger;
-
-    public function new(protocol:FDBAdapter, debugger:IDebugger)
+    var context:Context;
+    
+    public function new(context:Context)
     {
-        this.protocol = protocol;
-        this.debugger = debugger;
+        this.context = context;
     }
 
     public function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments):Void
@@ -36,19 +33,23 @@ class BreakpointsManager
                     breakpoints : justAdded
                 };
                 trace('send breakpoints result: $response' );
-                protocol.sendResponse( response );
+                context.protocol.sendResponse( response );
             }
         }        
         
         for (b in args.breakpoints)
         {
             var source = new SourceImpl(args.source.name, args.source.path);
+            var path = args.source.path;
+            if (!context.breakpoints.exists(path))
+                context.breakpoints.set(path, []);
+            var breakpoints = context.breakpoints.get(path);
             var result:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
-            var command = new SetBreakpoint(protocol, debugger, result);
+            var command = new SetBreakpoint(context, result);
             justAdded.push(result);
             breakpoints.push(result);
             command.callback =  commandDoneCallback;
-            debugger.queueCommand(command);
+            context.debugger.queueCommand(command);
             commands.push(command);
         }
     }

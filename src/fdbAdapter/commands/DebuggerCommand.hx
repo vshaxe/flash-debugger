@@ -6,41 +6,42 @@ interface IQueueItem<T>
 {
     var prev:T;
     var next:T;
-    var done(get,set):Bool;
+    var done(get,never):Bool;
 }
 
 class DebuggerCommand implements IQueueItem<DebuggerCommand>
 {
     public var prev:DebuggerCommand;
     public var next:DebuggerCommand;
-    public var done(get,set):Bool;
+    public var done(get, never):Bool;
 
     public var callback(never,set):Void->Void;
 
     var command:String;
+    var context:Context;
     var protocol:ProtocolServer;
     var debugger:IDebugger;
     var _callback:Void->Void = function() {};
     var _done = false;
 
-    public function new(protocol:ProtocolServer, debugger:IDebugger) 
+    public function new(context:Context) 
     {
-        this.protocol  = protocol;
-        this.debugger = debugger; 
+        this.context = context;
+        this.protocol = context.protocol;
+        this.debugger = context.debugger; 
     }
 
     public function execute():Void {}
     public function processDebuggerOutput(lines:Array<String>):Void {}
-
-    function get_done():Bool
-        return _done;
-
-    function set_done(val:Bool):Bool
+    
+    function setDone()
     {
-        if (val)
-            _callback();
-        return _done = val;
+        _callback();
+        _done = true;
     }
+
+    function get_done()
+        return _done;
 
     function set_callback(callback:Void->Void):Void->Void
     {

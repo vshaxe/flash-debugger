@@ -4,10 +4,7 @@ import js.node.child_process.ChildProcess as ChildProcessObject;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable;
-import adapter.ProtocolServer;
 import fdbAdapter.commands.DebuggerCommand;
-import fdbAdapter.commands.fdb.Start;
-import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
 typedef FDBConfig = {
     var fdbCmdParams : Array<String>;
@@ -16,18 +13,20 @@ typedef FDBConfig = {
 
 class FDBServer implements IDebugger
 {
-    var protocol:ProtocolServer;
+    var config:FDBConfig;
+    var processDebuggerOutput:Array<String> -> Void;
     var proc:ChildProcessObject;
     var buffer:Buffer;
+
+    var currentCommand:DebuggerCommand;
+
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
-    var currentCommand:DebuggerCommand;
-    var config:FDBConfig;
-    
-    public function new(config:FDBConfig, protocol:ProtocolServer)
+
+    public function new(config:FDBConfig, processDebuggerOutput:Array<String> -> Void)
     {
         this.config = config;
-        this.protocol = protocol;
+        this.processDebuggerOutput = processDebuggerOutput;
         buffer = new Buffer(0);
     }
 
@@ -36,8 +35,6 @@ class FDBServer implements IDebugger
         proc = ChildProcess.spawn(config.fdbCmd, config.fdbCmdParams, {env: {}});
         proc.stdout.on(ReadableEvent.Data,  onData );
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
-
-        queueCommand( new Start(protocol, this) );
     }
 
     public function queueCommand(command:DebuggerCommand)
@@ -57,7 +54,7 @@ class FDBServer implements IDebugger
     {
         proc.stdin.write('$command\n');
     }
-
+    
     function checkQueue()
     {
         if ((currentCommand == null) && (queueHead != null)) 
@@ -95,7 +92,6 @@ class FDBServer implements IDebugger
 
     function onData( buf:Buffer )
     {
-            
         var newLength = buffer.length + buf.length;
         buffer = Buffer.concat([buffer,buf], newLength);
         var string = buffer.toString();
@@ -110,27 +106,9 @@ class FDBServer implements IDebugger
                 currentCommand.processDebuggerOutput(lines);
                 if (currentCommand.done)
                     removeCurrentCommand();
-            }            
-            else 
-            {
-                globalStateProcess( lines );
             }
+            processDebuggerOutput( lines );
         }
-    }
-
-    function globalStateProcess(lines:Array<String>)
-    {
-        trace('globalStateProcess: $lines');
-        for (line in lines)
-        {
-            //Breakpoint 1, GameRound() at GameRound.hx:18
-            var r = ~/Breakpoint ([0-9]+), (.*) at ([0-9A-Za-z\.]+).hx:([0-9]+)/;
-            if (r.match(line))
-            {
-                protocol.sendEvent(new StoppedEventImpl("breakpoint", 1));
-            }
-        }
-
     }
 }
 
