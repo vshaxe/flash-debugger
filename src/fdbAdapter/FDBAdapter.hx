@@ -47,21 +47,15 @@ class FDBAdapter extends adapter.DebugSession {
         }
         debugger = new FDBServer( config.fdbConfig, processDebuggerOutput );
         context = new Context(this, debugger);
-
         breakpointsManager = new BreakpointsManager(context);
+
         context.debuggerState = WaitingGreeting;
         debugger.start();
-        
-        // this.sendEvent(new InitializedEvent());
-		// This debug adapter implements the configurationDoneRequest.
-		response.body.supportsConfigurationDoneRequest = true;
 
-		// make VS Code to use 'evaluate' when hovering over source
-		response.body.supportsEvaluateForHovers = true;
+        response.body.supportsConfigurationDoneRequest = true;
+        response.body.supportsEvaluateForHovers = true;
+        response.body.supportsStepBack = true;
 
-		// make VS Code to show a 'step back' button
-		response.body.supportsStepBack = true;
-        trace( 'got initialize request: $response');
         this.sendResponse( response );
     }
 
