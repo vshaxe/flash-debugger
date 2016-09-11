@@ -4,8 +4,8 @@ import adapter.Handles;
 import adapter.ProtocolServer;
 import protocol.debug.Types;
 
-class Context
-{
+class Context {
+    
     public var variableHandles(default, null):Handles<String>;
     public var sourcePath(default, default):String;
     public var breakpoints(default, null):Map<String, Array<Breakpoint>>;

@@ -81,7 +81,7 @@ class FDBServer implements IDebugger {
             command.next.prev = command.prev;
     }
 
-    function onData( buf:Buffer ) {
+    function onData(buf:Buffer) {
         var newLength = buffer.length + buf.length;
         buffer = Buffer.concat([buffer,buf], newLength);
         var string = buffer.toString();

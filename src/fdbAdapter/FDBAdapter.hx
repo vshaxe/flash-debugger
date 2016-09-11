@@ -16,7 +16,7 @@ typedef AdapterConfig = {
 class FDBAdapter extends adapter.DebugSession {
 
     static var config:AdapterConfig;
-    public static function setup( config:AdapterConfig ) {
+    public static function setup(config:AdapterConfig) {
         FDBAdapter.config = config;
     }
 
@@ -42,10 +42,10 @@ class FDBAdapter extends adapter.DebugSession {
         if (config == null) {
             response.success = false;
             response.message = "setup with config first";
-            this.sendResponse( response );
+            this.sendResponse(response);
             return;
         }
-        debugger = new FDBServer( config.fdbConfig, processDebuggerOutput );
+        debugger = new FDBServer(config.fdbConfig, processDebuggerOutput);
         context = new Context(this, debugger);
         breakpointsManager = new BreakpointsManager(context);
 
@@ -114,7 +114,7 @@ class FDBAdapter extends adapter.DebugSession {
         switch (parts[0]) {
             case "local":
                 var frameId = Std.parseInt(parts[1]);
-                debugger.queueCommand(new LocalVariables(context,response));
+                debugger.queueCommand(new LocalVariables(context, response));
 
             default:
         }

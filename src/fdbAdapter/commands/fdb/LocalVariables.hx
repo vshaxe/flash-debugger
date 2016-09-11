@@ -25,7 +25,7 @@ class LocalVariables extends DebuggerCommand {
                     type: rObject.matched(3),
                     value: '${rObject.matched(3)} [${rObject.matched(2)}]',
                     variablesReference: context.variableHandles.create('object_${rObject.matched(1)}')
-			    });
+                });
             }
         }
         response.body = {

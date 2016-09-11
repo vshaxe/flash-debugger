@@ -16,7 +16,7 @@ class SetBreakpoint extends DebuggerCommand {
         var filePath:String = breakpoint.source.path;
         var line = breakpoint.line;
         var splited = filePath.split("\\");
-	    var fname = splited.pop();
+        var fname = splited.pop();
         debugger.send('break $fname:${line}');
     }
 

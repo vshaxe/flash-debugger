@@ -9,6 +9,7 @@ interface IQueueItem<T> {
 }
 
 class DebuggerCommand implements IQueueItem<DebuggerCommand> {
+    
     public var prev:DebuggerCommand;
     public var next:DebuggerCommand;
     public var done(get, never):Bool;
