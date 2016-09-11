@@ -1,4 +1,5 @@
 package fdbAdapter;
+
 import adapter.Handles;
 import adapter.ProtocolServer;
 import protocol.debug.Types;
@@ -10,10 +11,9 @@ class Context
     public var breakpoints(default, null):Map<String, Array<Breakpoint>>;
     public var debugger(default, null):IDebugger;
     public var protocol(default, null):ProtocolServer;
-    public var debuggerState(default,default):EDebuggerState;
+    public var debuggerState(default, default):EDebuggerState;
 
-    public function new( protocol:ProtocolServer, debugger:IDebugger)
-    {
+    public function new( protocol:ProtocolServer, debugger:IDebugger) {
         this.protocol = protocol;
         this.debugger = debugger;
 

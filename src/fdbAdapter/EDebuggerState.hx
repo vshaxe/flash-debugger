@@ -1,9 +1,8 @@
 package fdbAdapter;
 
-import protocol.debug.Types;
+import protocol.debug.Types.StackFrame;
 
-enum EDebuggerState
-{
+enum EDebuggerState {
     WaitingGreeting;
     Configuring;
     Running;

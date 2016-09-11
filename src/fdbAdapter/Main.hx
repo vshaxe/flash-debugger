@@ -24,8 +24,7 @@ class Main
         }
     }
 
-    static function Log( input:{type:String, message:String} ):Void
-    {
+    static function Log(input:{type:String, message:String}) {
         Fs.appendFile('log.txt', haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
     }
 }

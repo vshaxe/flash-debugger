@@ -2,15 +2,13 @@ package fdbAdapter.commands;
 import adapter.ProtocolServer;
 import js.node.ChildProcess;
 
-interface IQueueItem<T>
-{
+interface IQueueItem<T> {
     var prev:T;
     var next:T;
     var done(get,never):Bool;
 }
 
-class DebuggerCommand implements IQueueItem<DebuggerCommand>
-{
+class DebuggerCommand implements IQueueItem<DebuggerCommand> {
     public var prev:DebuggerCommand;
     public var next:DebuggerCommand;
     public var done(get, never):Bool;
@@ -21,30 +19,27 @@ class DebuggerCommand implements IQueueItem<DebuggerCommand>
     var context:Context;
     var protocol:ProtocolServer;
     var debugger:IDebugger;
-    var _callback:Void->Void = function() {};
+    var _callback:Void -> Void = function() {};
     var _done = false;
 
-    public function new(context:Context) 
-    {
+    public function new(context:Context) {
         this.context = context;
         this.protocol = context.protocol;
         this.debugger = context.debugger; 
     }
 
-    public function execute():Void {}
-    public function processDebuggerOutput(lines:Array<String>):Void {}
+    public function execute() {}
+    public function processDebuggerOutput(lines:Array<String>) {}
     
-    function setDone()
-    {
+    function setDone() {
         _callback();
         _done = true;
     }
 
-    function get_done()
+    function get_done():Bool
         return _done;
 
-    function set_callback(callback:Void->Void):Void->Void
-    {
+    function set_callback(callback:Void -> Void):Void -> Void {
         _callback = callback;
         return _callback;
     }

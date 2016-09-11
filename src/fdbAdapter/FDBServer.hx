@@ -11,8 +11,8 @@ typedef FDBConfig = {
     var fdbCmd : String;
 }
 
-class FDBServer implements IDebugger
-{
+class FDBServer implements IDebugger {
+
     var config:FDBConfig;
     var processDebuggerOutput:Array<String> -> Void;
     var proc:ChildProcessObject;
@@ -23,22 +23,19 @@ class FDBServer implements IDebugger
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
 
-    public function new(config:FDBConfig, processDebuggerOutput:Array<String> -> Void)
-    {
+    public function new(config:FDBConfig, processDebuggerOutput:Array<String> -> Void) {
         this.config = config;
         this.processDebuggerOutput = processDebuggerOutput;
         buffer = new Buffer(0);
     }
 
-    public function start()
-    {
+    public function start() {
         proc = ChildProcess.spawn(config.fdbCmd, config.fdbCmdParams, {env: {}});
         proc.stdout.on(ReadableEvent.Data,  onData );
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
     }
 
-    public function queueCommand(command:DebuggerCommand)
-    {
+    public function queueCommand(command:DebuggerCommand) {
         // add to the queue
         if (queueHead == null) {
             queueHead = queueTail = command;
@@ -50,36 +47,30 @@ class FDBServer implements IDebugger
         checkQueue();
     }
     
-    public function send(command:String):Void
-    {
+    public function send(command:String) {
         proc.stdin.write('$command\n');
     }
     
-    function checkQueue()
-    {
-        if ((currentCommand == null) && (queueHead != null)) 
-        {
+    function checkQueue() {
+        if ((currentCommand == null) && (queueHead != null)) {
             currentCommand = queueHead;
             queueHead = currentCommand.next;
             executeCurrentCommand();
         }
     }
 
-    function executeCurrentCommand()
-    {        
+    function executeCurrentCommand() {        
         currentCommand.execute();
         if (currentCommand.done)
             removeCurrentCommand();
     }
 
-    function removeCurrentCommand()
-    {
+    function removeCurrentCommand() {
         currentCommand = null;
         checkQueue();
     }
 
-    function removeCommand(command:DebuggerCommand):Void
-    {
+    function removeCommand(command:DebuggerCommand) {
         if (command == queueHead)
             queueHead = command.next;
         if (command == queueTail)
@@ -90,19 +81,16 @@ class FDBServer implements IDebugger
             command.next.prev = command.prev;
     }
 
-    function onData( buf:Buffer )
-    {
+    function onData( buf:Buffer ) {
         var newLength = buffer.length + buf.length;
         buffer = Buffer.concat([buffer,buf], newLength);
         var string = buffer.toString();
-        if (string.substr(-6) == "(fdb) ")
-        {
+        if (string.substr(-6) == "(fdb) ") {
             var fdbOutput = string.substring(0, string.length - 6 );
             var lines = fdbOutput.split("\r\n");
             lines.pop();
             buffer = new Buffer(0);
-            if (currentCommand != null)
-            {
+            if (currentCommand != null) {
                 currentCommand.processDebuggerOutput(lines);
                 if (currentCommand.done)
                     removeCurrentCommand();
@@ -111,4 +99,3 @@ class FDBServer implements IDebugger
         }
     }
 }
-
