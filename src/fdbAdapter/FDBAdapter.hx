@@ -107,17 +107,7 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
-        var id:Int = args.variablesReference;
-        var varId:String = context.variableHandles.get(id);
-
-        var parts:Array<String> = varId.split("_");
-        switch (parts[0]) {
-            case "local":
-                var frameId = Std.parseInt(parts[1]);
-                debugger.queueCommand(new LocalVariables(context, response));
-
-            default:
-        }
+        debugger.queueCommand(new Variables(context, response, args));
     }
 
     function processDebuggerOutput(lines:Array<String>) {
