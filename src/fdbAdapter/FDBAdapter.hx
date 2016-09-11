@@ -95,15 +95,15 @@ class FDBAdapter extends adapter.DebugSession {
     override function scopesRequest(response:ScopesResponse, args:ScopesArguments) {
         var frameId:Int = args.frameId;
         var scopes:Array<Scope> = [
-            new ScopeImpl("Local", context.variableHandles.create('local_$frameId'), false)
-		    , new ScopeImpl("Closure", context.variableHandles.create('closure_$frameId'), false)
-		    , new ScopeImpl("Global", context.variableHandles.create('global_$frameId'), true)
+            new ScopeImpl("Local", context.variableHandles.create('local_$frameId'), false),
+            new ScopeImpl("Closure", context.variableHandles.create('closure_$frameId'), false),
+            new ScopeImpl("Global", context.variableHandles.create('global_$frameId'), true)
         ];
 
         response.body = {
-			scopes: cast scopes
-		};
-		this.sendResponse(response);
+            scopes: cast scopes
+        };
+        this.sendResponse(response);
     }
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
