@@ -2,17 +2,7 @@ package fdbAdapter.commands.fdb;
 
 import protocol.debug.Types.VariablesResponse;
 import protocol.debug.Types.VariablesArguments;
-
-@:enum
-abstract VariableType(String) to String {
-
-    var Object = "Object";
-    var Int = "Int";
-    var Float = "Float";
-    var String = "String";
-    var Bool = "Bool";
-    var Unknown = "Unknown";
-}
+import fdbAdapter.types.VariableType;
 
 enum VarRequestType {
     Locals(frameId:Int);
@@ -62,7 +52,7 @@ class Variables extends DebuggerCommand {
             if (rVar.match(line)) {
                 var name = rVar.matched(1);
                 var value = rVar.matched(2);
-                var type = detectTypeOf(value);
+                var type = FDBOutputParseHelper.detectExpressionType(value);
                 var vRef = 0;
 
                 if (type == VariableType.Object)
@@ -81,27 +71,6 @@ class Variables extends DebuggerCommand {
         };
         protocol.sendResponse(response);
         setDone();
-    }
-
-    function detectTypeOf(value:String):VariableType {
-        var rObjectType = ~/^\[Object \d+/;
-        var rIntType = ~/^\d+ \(0\x\d+\)/;
-        var rFloatType = ~/^\d+\.\d+$/;
-        var rStringType = ~/^[\\"].*[\\"]$/; 
-        var rBoolType = ~/^[t|f]\S+$/;
-
-        return if (rObjectType.match(value))
-            VariableType.Object;
-        else if (rIntType.match(value))
-            VariableType.Int;
-        else if (rFloatType.match(value))
-            VariableType.Float;
-        else if (rStringType.match(value))
-            VariableType.String;
-        else if (rBoolType.match(value))
-            VariableType.Bool;
-        else
-            VariableType.Unknown;
     }
 
     function getRequestType(varId:String):VarRequestType {

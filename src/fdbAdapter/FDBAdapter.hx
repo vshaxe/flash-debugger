@@ -110,6 +110,11 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.queueCommand(new Variables(context, response, args));
     }
 
+    override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments)
+    {
+        debugger.queueCommand(new Evaluate(context, response, args));
+    }
+
     function processDebuggerOutput(lines:Array<String>) {
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:

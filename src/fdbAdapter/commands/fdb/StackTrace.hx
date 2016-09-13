@@ -17,11 +17,9 @@ class StackTrace extends DebuggerCommand {
 
     override public function processDebuggerOutput(lines:Array<String>) {
         var frames = [];
-        var rMethod = ~/#([0-9]+)\s+this = \[Object [0-9]+, class='([0-9a-zA-Z\.:]+)'\]\.[a-zA-Z0-9\/]+.*\) at ([a-zA-Z0-9\.]+):([0-9]+).*/;
         var rMethod = ~/#([0-9]+)\s+this = \[Object [0-9]+, class='(.+)'\]\.(.+)\(.*\) at (.*):([0-9]+).*/;
         var anonFunction = ~/#([0-9]+)\s+this = \[Function [0-9]+, name='(.*)'\]\.([a-zA-Z0-9\/\$<>]+).*\) at (.*):([0-9]+).*/;
         var globalCall = ~/#([0-9]+)\s+(.*)\(\) at (.*):([0-9]+)/;
-        var l = lines[8];
         for (l in lines) {
             var frame = 
             if (rMethod.match(l)) {
