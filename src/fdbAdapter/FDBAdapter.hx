@@ -44,7 +44,7 @@ class FDBAdapter extends adapter.DebugSession {
         if (config == null) {
             response.success = false;
             response.message = "setup with config first";
-            this.sendResponse(response);
+            sendResponse(response);
             return;
         }
         debugger = new FDBServer(config.fdbConfig, processDebuggerOutput);
