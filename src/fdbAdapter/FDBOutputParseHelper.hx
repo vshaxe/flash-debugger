@@ -1,5 +1,6 @@
 package fdbAdapter;
 import fdbAdapter.types.VariableType;
+import fdbAdapter.types.VarRequestType;
 
 class FDBOutputParseHelper
 {

@@ -8,6 +8,8 @@ import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
 import fdbAdapter.commands.fdb.*;
 import fdbAdapter.FDBServer.FDBConfig;
+import fdbAdapter.types.VarRequestType;
+import haxe.ds.Option;
 
 typedef AdapterConfig = {
     var fdbConfig : FDBConfig;
@@ -53,8 +55,8 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.start();
 
         response.body.supportsConfigurationDoneRequest = true;
-        response.body.supportsEvaluateForHovers = true;
-        response.body.supportsStepBack = true;
+        response.body.supportsEvaluateForHovers = false;
+        response.body.supportsStepBack = false;
 
         this.sendResponse( response );
     }
@@ -76,7 +78,6 @@ class FDBAdapter extends adapter.DebugSession {
     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments) {
         sendResponse(response);
         debugger.queueCommand(new Continue(context));
-        context.debuggerState = Running;
     }
 
     override function threadsRequest(response:ThreadsResponse) {
@@ -107,15 +108,49 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
-        debugger.queueCommand(new Variables(context, response, args));
+        var id = args.variablesReference;
+        var varId:String = context.variableHandles.get(id);
+        var requestType:VarRequestType = getVariablesRequestType(varId);
+        var framesDiff:Int = getFramesDiff(requestType);
+
+        if (framesDiff != 0) {
+            for (i in 0...Math.floor(Math.abs(framesDiff))) {   
+                if (framesDiff < 0)
+                    debugger.queueCommand(new FrameUp(context));
+                else
+                    debugger.queueCommand(new FrameDown(context));
+            }
+        }
+        debugger.queueCommand(new Variables(context, response, requestType));
     }
 
-    override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments)
-    {
+    override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
         debugger.queueCommand(new Evaluate(context, response, args));
     }
 
+    override function stepInRequest(response:StepInResponse, args:StepInArguments) {
+        debugger.queueCommand(new StepInCommand(context, response));
+    }
+
+    override function nextRequest(response:NextResponse, args:NextArguments) {
+        debugger.queueCommand(new NextCommand(context, response));
+    }
+
+    override function continueRequest(response:ContinueResponse, args:ContinueArguments) {
+        debugger.queueCommand(new Continue(context));
+        response.body = {
+            allThreadsContinued : true
+        }
+        sendResponse( response );
+    }
+
+    override function pauseRequest(response:PauseResponse, args:PauseArguments) {
+        debugger.queueCommand(new Pause(context));
+        sendResponse( response );
+    }
+
     function processDebuggerOutput(lines:Array<String>) {
+        trace('OUTPUT: $lines');
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:
                 if (greetingMatched(lines)) {
@@ -150,5 +185,49 @@ class FDBAdapter extends adapter.DebugSession {
                 return true;
         }
         return false;
+    }
+
+    function getVariablesRequestType(varId:String):VarRequestType {
+        var parts:Array<String> = varId.split("_");
+        var requestType = parts[0];
+        return switch (requestType) {
+            case "local":
+                Locals(Std.parseInt(parts[1]));
+            case "global":
+                Global(Std.parseInt(parts[1]));
+            case "closure":
+                Closure(Std.parseInt(parts[1]));
+            case "object":
+                ObjectDetails(parts[1]);
+            case _:
+                throw "unrecognized";
+        }
+    }
+
+    function getFramesDiff(requestType:VarRequestType):Int {
+        var frameId:Option<Int> = switch (requestType) {
+            case Locals(frameId):
+                Some(frameId);
+            case Global(frameId):
+                Some(frameId);
+            case Closure(frameId):
+                Some(frameId);
+            default:
+                None;
+        }
+
+        var currentFrame = switch ( context.debuggerState ) {
+            case Stopped(frames, currentFrame):
+                Some(currentFrame);
+            default:
+                None;
+        }
+
+        return switch [frameId, currentFrame] {
+            case [ Some( requestedFrame ), Some( currentFrame ) ]:
+                currentFrame - requestedFrame;
+            default:
+                0;
+        }
     }
 }

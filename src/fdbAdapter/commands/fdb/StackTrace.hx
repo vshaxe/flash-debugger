@@ -20,6 +20,7 @@ class StackTrace extends DebuggerCommand {
         var rMethod = ~/#([0-9]+)\s+this = \[Object [0-9]+, class='(.+)'\]\.(.+)\(.*\) at (.*):([0-9]+).*/;
         var anonFunction = ~/#([0-9]+)\s+this = \[Function [0-9]+, name='(.*)'\]\.([a-zA-Z0-9\/\$<>]+).*\) at (.*):([0-9]+).*/;
         var globalCall = ~/#([0-9]+)\s+(.*)\(\) at (.*):([0-9]+)/;
+        trace('STACK TRACE $lines');
         for (l in lines) {
             var frame = 
             if (rMethod.match(l)) {

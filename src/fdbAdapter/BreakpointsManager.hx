@@ -2,7 +2,9 @@ package fdbAdapter;
 
 import adapter.DebugSession.Breakpoint as BreakpointImpl;
 import adapter.DebugSession.Source as SourceImpl;
-import protocol.debug.Types;
+import protocol.debug.Types.SetBreakpointsArguments;
+import protocol.debug.Types.SetBreakpointsResponse;
+import protocol.debug.Types.Breakpoint;
 import fdbAdapter.commands.fdb.SetBreakpoint;
 
 class BreakpointsManager {
@@ -32,20 +34,36 @@ class BreakpointsManager {
             }
         }        
         
+        var source = new SourceImpl(args.source.name, args.source.path);
+        var path = args.source.path;
+        var breakpoints = [];
+        var alreadySet = getAlreadySetMap(path, context.breakpoints);
+
         for (b in args.breakpoints) {
-            var source = new SourceImpl(args.source.name, args.source.path);
-            var path = args.source.path;
-            if (!context.breakpoints.exists(path)) {
-                context.breakpoints.set(path, []);
+            if (alreadySet.exists(b.line)) {
+                breakpoints.push( alreadySet.get(b.line));
+            } 
+            else {
+                var result:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
+                var command = new SetBreakpoint(context, result);
+                justAdded.push(result);
+                breakpoints.push(result);
+                command.callback =  commandDoneCallback;
+                context.debugger.queueCommand(command);
+                commands.push(command);
             }
-            var breakpoints = context.breakpoints.get(path);
-            var result:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
-            var command = new SetBreakpoint(context, result);
-            justAdded.push(result);
-            breakpoints.push(result);
-            command.callback =  commandDoneCallback;
-            context.debugger.queueCommand(command);
-            commands.push(command);
         }
+        context.breakpoints.set( path, breakpoints);
+    }
+
+    function getAlreadySetMap(path:String, breakpoints:Map<String, Array<Breakpoint>>):Map<Int, Breakpoint> {
+        var result = new Map<Int, Breakpoint>();
+        if (breakpoints.exists(path)) {
+            var addedForThisPath:Array<Breakpoint> = breakpoints.get(path);
+            for (b in addedForThisPath) {
+                result.set(b.line, b);
+            }
+        }
+        return result;
     }
 }

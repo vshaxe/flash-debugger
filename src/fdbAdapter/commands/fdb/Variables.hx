@@ -3,34 +3,28 @@ package fdbAdapter.commands.fdb;
 import protocol.debug.Types.VariablesResponse;
 import protocol.debug.Types.VariablesArguments;
 import fdbAdapter.types.VariableType;
-
-enum VarRequestType {
-    Locals(frameId:Int);
-    ObjectDetails(name:String);
-}
+import fdbAdapter.types.VarRequestType;
 
 class Variables extends DebuggerCommand {
 
     var args:VariablesArguments;
     var response:VariablesResponse;
-    var requestType:VarRequestType; 
+    var requestType:VarRequestType;
     
-    public function new(context:Context, response:VariablesResponse, args:VariablesArguments) {
+    public function new(context:Context, response:VariablesResponse, requestType:VarRequestType) {
         super(context);
-
-        this.args = args;
         this.response = response;
-
-        var id = args.variablesReference;
-        var varId:String = context.variableHandles.get(id);
-        requestType = getRequestType(varId);
+        this.requestType = requestType;
     }
 
     override public function execute() {
         var command:String = switch (requestType) {
             case Locals(frameId):
-                 "info locals";
-
+                "info locals";
+            case Global(frameId):
+                "info global";
+            case Closure(fameId):
+                "print this.";
             case ObjectDetails(name):
                 'print $name.';
         }
@@ -42,7 +36,7 @@ class Variables extends DebuggerCommand {
         var rVar = ~/^(.*) = (.*)$/;
 
         var parentName = switch (requestType) {
-            case Locals(_):
+            case Locals(_) | Global(_) | Closure(_): 
                 "";
             case ObjectDetails(name):
                 '$name.';
@@ -71,18 +65,5 @@ class Variables extends DebuggerCommand {
         };
         protocol.sendResponse(response);
         setDone();
-    }
-
-    function getRequestType(varId:String):VarRequestType {
-        var parts:Array<String> = varId.split("_");
-        var requestType = parts[0];
-        return switch (requestType) {
-            case "local":
-                Locals(Std.parseInt(parts[1]));
-            case "object":
-                ObjectDetails(parts[1]);
-            case _:
-                throw "unrecognized";
-        }
     }
 }

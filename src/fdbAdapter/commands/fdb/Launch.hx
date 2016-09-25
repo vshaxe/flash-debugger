@@ -10,26 +10,23 @@ typedef FDBLaunchRequestArguments =
     var sourcePath:String;
 } 
 
-class Launch extends DebuggerCommand
-{
+class Launch extends DebuggerCommand {
+
     var args:FDBLaunchRequestArguments;
     var response:LaunchResponse;
 
-    public function new(context:Context, response:LaunchResponse, args:FDBLaunchRequestArguments)
-    {
+    public function new(context:Context, response:LaunchResponse, args:FDBLaunchRequestArguments) {
         this.args = args;
         this.response = response;
         super(context);
     }
 
-    override function execute()
-    {
+    override function execute() {
         var program = args.runPath + "/" + args.runCommand;
         debugger.send('run $program');
     }
     
-    override public function processDebuggerOutput(lines:Array<String>):Void
-    {
+    override public function processDebuggerOutput(lines:Array<String>) {
         var matchingOutputLine = lines[lines.length - 1];
         if (matchSWFConnected( matchingOutputLine ))
         {
@@ -40,8 +37,7 @@ class Launch extends DebuggerCommand
             trace( 'Launch FAILED: [ $lines ]');
     }
 
-    function matchSWFConnected(data:String):Bool
-    {
+    function matchSWFConnected(data:String):Bool {
         return 
             if (data == null)
                 false;
