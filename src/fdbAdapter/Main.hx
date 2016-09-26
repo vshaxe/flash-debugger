@@ -5,8 +5,8 @@ class Main
 {
     public static function main() {
         FDBAdapter.setup( {fdbConfig : { 
-            fdbCmd : "D:\\flex_sdk_4.6\\bin\\fdb.exe"
-            , fdbCmdParams : []
+            fdbCmd : "java"
+            , fdbCmdParams : ["-jar", "fdb/fdb.jar"]
         }});
         DebugSession.run( FDBAdapter );
         setupTrace();

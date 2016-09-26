@@ -145,8 +145,7 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function pauseRequest(response:PauseResponse, args:PauseArguments) {
-        debugger.queueCommand(new Pause(context));
-        sendResponse( response );
+        debugger.queueCommand(new Pause(context, response));
     }
 
     function processDebuggerOutput(lines:Array<String>) {
