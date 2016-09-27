@@ -7,6 +7,8 @@ import protocol.debug.Types.SetBreakpointsResponse;
 import protocol.debug.Types.Breakpoint;
 import fdbAdapter.commands.fdb.SetBreakpoint;
 import fdbAdapter.commands.fdb.RemoveBreakpoint;
+import fdbAdapter.commands.fdb.StopForBreakpointsSetting;
+import fdbAdapter.commands.fdb.ContinueAfterBreakpointsSet;
 import fdbAdapter.commands.DebuggerCommand;
 
 private class CommandsBatchContext {
@@ -40,19 +42,22 @@ class BreakpointsManager {
     }
 
     public function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
-        trace("setBreakPointsRequest");
-        trace( args );
-
         var source = new SourceImpl(args.source.name, args.source.path);
-        var path = args.source.path;
+        var pathKey = getKey(args.source.path);
 
-        if (!context.breakpoints.exists(path)) {
-            context.breakpoints.set(path, []);
+        if (!context.breakpoints.exists(pathKey)) {
+            context.breakpoints.set(pathKey, []);
         }      
 
-        var breakpoints = context.breakpoints.get(path);
-        var previouslySet = getAlreadySetMap(path, context.breakpoints);
-        var batchContext = new CommandsBatchContext( commandDoneCallback.bind(path, response ) );
+        var breakpoints = context.breakpoints.get(pathKey);
+        var previouslySet = getAlreadySetMap(pathKey, context.breakpoints);
+        var batchContext = new CommandsBatchContext( commandDoneCallback.bind(pathKey, response ) );
+
+        switch (context.debuggerState) {
+            case EDebuggerState.Running:
+                queueCommand(new StopForBreakpointsSetting(context), batchContext);
+            default:
+        }
 
         for (b in args.breakpoints) {
             if (previouslySet.exists(b.line)) {
@@ -60,17 +65,24 @@ class BreakpointsManager {
             } 
             else {
                 var breakpoint:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
-                var cmd = addBreakpoint(breakpoint, breakpoints);
-                batchContext.add(cmd);
-                context.debugger.queueCommand(cmd);
+                queueCommand(addBreakpoint(breakpoint, breakpoints), batchContext);
             }
         }
 
         for (needToRemove in previouslySet) {
-            var cmd = removeBreakpoint(needToRemove, breakpoints);
-            batchContext.add(cmd);
-            context.debugger.queueCommand(cmd);
+            queueCommand(removeBreakpoint(needToRemove, breakpoints), batchContext);
         }
+
+        switch (context.debuggerState) {
+            case EDebuggerState.Running:
+                queueCommand(new ContinueAfterBreakpointsSet(context), batchContext);
+            default:
+        }
+    }
+
+    function queueCommand(cmd:DebuggerCommand, batchContext:CommandsBatchContext) {
+        batchContext.add(cmd);
+        context.debugger.queueCommand(cmd);
     }
 
     function addBreakpoint(breakpoint:Breakpoint, container:Array<Breakpoint>):DebuggerCommand {
@@ -93,7 +105,6 @@ class BreakpointsManager {
         response.body = {
             breakpoints : validated
         };
-        trace('send breakpoints result: $response' );
         context.protocol.sendResponse( response );
     }
 
@@ -105,6 +116,12 @@ class BreakpointsManager {
                 result.set(b.line, b);
             }
         }
+        return result;
+    }
+
+    function getKey(path:String):String {
+        var result = StringTools.replace(path, "\\", "-");
+        result = StringTools.replace(result, "/", "-");
         return result;
     }
 }

@@ -11,7 +11,6 @@ class FrameDown extends DebuggerCommand {
     }
     
     override public function processDebuggerOutput(lines:Array<String>) {
-        trace(lines);
         var line = lines[0];
         switch (context.debuggerState) {
             case EDebuggerState.Stopped(frames, currentFrame):

@@ -2,6 +2,7 @@ package fdbAdapter.commands.fdb;
 
 import protocol.debug.Types.PauseResponse;
 
+
 class Pause extends DebuggerCommand {
 
     var response:PauseResponse;
@@ -17,8 +18,8 @@ class Pause extends DebuggerCommand {
     }
 
     override public function processDebuggerOutput(lines:Array<String>) {
-        trace('Pause: $lines');
         setDone();
         protocol.sendResponse(response);
+        context.enterStoppedState("pause");
     }
 }

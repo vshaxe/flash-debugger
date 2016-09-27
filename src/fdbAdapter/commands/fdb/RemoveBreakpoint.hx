@@ -13,10 +13,8 @@ class RemoveBreakpoint extends DebuggerCommand {
     }
 
     override function execute() {
-        var filePath:String = breakpoint.source.path;
         var line = breakpoint.line;
-        var splited = filePath.split("\\");
-        var fname = splited.pop();
+        var fname = breakpoint.source.name;
         debugger.send('clear $fname:${line}');
     }
 

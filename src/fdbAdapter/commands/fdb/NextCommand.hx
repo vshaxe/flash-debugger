@@ -17,7 +17,6 @@ class NextCommand extends DebuggerCommand {
     }
     
     override public function processDebuggerOutput(lines:Array<String>) {
-        trace(lines);
         var line = lines[0];
         var rStopeed = ~/Execution halted, (\S)+:([0-9]+)/;
         //if (rStopeed.match(line)) {

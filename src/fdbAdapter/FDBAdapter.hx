@@ -148,6 +148,11 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.queueCommand(new Pause(context, response));
     }
 
+    override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {
+        debugger.stop();
+        sendResponse(response);
+    }
+
     function processDebuggerOutput(lines:Array<String>) {
         trace('OUTPUT: $lines');
         switch (context.debuggerState) {
@@ -161,8 +166,7 @@ class FDBAdapter extends adapter.DebugSession {
 
             case EDebuggerState.Running:
                 if (breakpointMet(lines)) {
-                    context.debuggerState = EDebuggerState.Stopped([], 0);
-                    sendEvent(new StoppedEventImpl("breakpoint", 1));
+                    context.enterStoppedState("breakpoint");
                 }
 
             case _:
@@ -179,7 +183,7 @@ class FDBAdapter extends adapter.DebugSession {
 
     function breakpointMet(lines:Array<String>):Bool {
         for (line in lines) {
-            var r = ~/Breakpoint ([0-9]+), (.*) at (.+).hx:([0-9]+)/;
+            var r = ~/Breakpoint ([0-9]+),(.*) (.+).hx:([0-9]+)/;
             if (r.match(line))
                 return true;
         }

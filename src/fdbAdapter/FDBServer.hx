@@ -35,6 +35,10 @@ class FDBServer implements IDebugger {
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
     }
 
+    public function stop() {
+        proc.kill("SIGINT");
+    }
+
     public function queueCommand(command:DebuggerCommand) {
         // add to the queue
         if (queueHead == null) {
@@ -48,6 +52,7 @@ class FDBServer implements IDebugger {
     }
     
     public function send(command:String) {
+        trace('send to fdb: $command\n');
         proc.stdin.write('$command\n');
     }
     

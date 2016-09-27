@@ -2,6 +2,7 @@ package fdbAdapter;
 
 import adapter.Handles;
 import adapter.ProtocolServer;
+import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 import protocol.debug.Types;
 
 class Context {
@@ -19,5 +20,10 @@ class Context {
 
         breakpoints = new Map<String, Array<Breakpoint>>();
         variableHandles = new Handles<String>();
+    }
+
+    public function enterStoppedState(reason:String) {
+        debuggerState = EDebuggerState.Stopped([], 0);
+        protocol.sendEvent(new StoppedEventImpl(reason, 1));
     }
 }
