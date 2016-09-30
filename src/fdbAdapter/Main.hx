@@ -6,7 +6,7 @@ class Main
     public static function main() {
         FDBAdapter.setup( {fdbConfig : { 
             fdbCmd : "java"
-            , fdbCmdParams : ["-jar", "fdb/fdb.jar"]
+            , fdbCmdParams : ["-Duser.language=en", "-jar", "fdb/fdb.jar"]
         }});
         DebugSession.run( FDBAdapter );
         setupTrace();
