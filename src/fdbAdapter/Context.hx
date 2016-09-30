@@ -9,6 +9,7 @@ class Context {
     
     public var variableHandles(default, null):Handles<String>;
     public var sourcePath(default, default):String;
+    public var fileNameToFullPathDict(default, default):Map<String, String>;
     public var breakpoints(default, null):Map<String, Array<Breakpoint>>;
     public var debugger(default, null):IDebugger;
     public var protocol(default, null):ProtocolServer;
@@ -19,6 +20,7 @@ class Context {
         this.debugger = debugger;
 
         breakpoints = new Map<String, Array<Breakpoint>>();
+        fileNameToFullPathDict = new Map<String, String>();
         variableHandles = new Handles<String>();
     }
 
