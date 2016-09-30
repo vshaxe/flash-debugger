@@ -27,7 +27,7 @@ class StackTrace extends DebuggerCommand {
                     id : Std.parseInt(rMethod.matched(1)),
                     name : rMethod.matched(2) + "." + rMethod.matched(3),
                     line : Std.parseInt( rMethod.matched(5)),
-                    source : { name : rMethod.matched(4), path : calculatePath(context.sourcePath, rMethod.matched(2), rMethod.matched(4))},
+                    source : { name : rMethod.matched(4), path : getPath(context, rMethod.matched(4))},
                     column : 0 
                 };
             }
@@ -36,7 +36,7 @@ class StackTrace extends DebuggerCommand {
                     id : Std.parseInt(anonFunction.matched(1)),
                     name : anonFunction.matched(2) + "." + anonFunction.matched(3),
                     line : Std.parseInt( anonFunction.matched(5)),
-                    source : { name : anonFunction.matched(4), path : calculatePath(context.sourcePath, anonFunction.matched(2), anonFunction.matched(4))},
+                    source : { name : anonFunction.matched(4), path : getPath(context, anonFunction.matched(4))},
                     column : 0 
                 };
                
@@ -73,11 +73,8 @@ class StackTrace extends DebuggerCommand {
         setDone();
     }
 
-    function calculatePath(basePath:String, className:String, fileName:String):String {
-        StringTools.replace(className, "$","");
-        var parts:Array<String> = className.split("::");
-        var delimiter = "\\";
-        var path = StringTools.replace(parts[0], ".", delimiter);
-        return '$basePath$delimiter$path$delimiter$fileName';
+    function getPath(context:Context, fileName:String):String {        
+        var path:String = context.fileNameToFullPathDict.get(fileName);
+        return '$path';        
     }
 }

@@ -43,7 +43,7 @@ class BreakpointsManager {
 
     public function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
         var source = new SourceImpl(args.source.name, args.source.path);
-        var pathKey = getKey(args.source.path);
+        var pathKey = getKey(args.source.name);
 
         if (!context.breakpoints.exists(pathKey)) {
             context.breakpoints.set(pathKey, []);
@@ -120,8 +120,8 @@ class BreakpointsManager {
     }
 
     function getKey(path:String):String {
-        var result = StringTools.replace(path, "\\", "-");
-        result = StringTools.replace(result, "/", "-");
+        var result = StringTools.replace(path, "\\", "/");
+        //result = StringTools.replace(result, "/", "-");
         return result;
     }
 }

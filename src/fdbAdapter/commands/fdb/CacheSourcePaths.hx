@@ -7,11 +7,10 @@ class CacheSourcePaths extends DebuggerCommand {
     }
 
     override public function processDebuggerOutput(lines:Array<String>) {
-        var rRow = ~/^([0-9]+) ([a-zA-Z0-9\/\\:.]+), ([a-zA-Z0-9:.]+)$/;
+        var rRow = ~/^([0-9]+) (.+), ([a-zA-Z0-9:.]+)$/;
         for (l in lines) {
             if (rRow.match(l)) {
-                context.fileNameToFullPathDict.set(rRow.matched(2), rRow.matched(1));
-                trace(rRow.matched(1));
+                context.fileNameToFullPathDict.set(rRow.matched(3), rRow.matched(2));                
             }
         }
         setDone();

@@ -154,8 +154,7 @@ class FDBAdapter extends adapter.DebugSession {
         sendResponse(response);
     }
 
-    function processDebuggerOutput(lines:Array<String>) {
-        trace('OUTPUT: $lines');
+    function processDebuggerOutput(lines:Array<String>) {        
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:
                 if (greetingMatched(lines)) {
