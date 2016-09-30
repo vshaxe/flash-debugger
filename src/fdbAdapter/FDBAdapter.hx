@@ -68,6 +68,7 @@ class FDBAdapter extends adapter.DebugSession {
 
         context.sourcePath = customArgs.sourcePath;
         debugger.queueCommand(new Launch(context, response, cast args));
+        debugger.queueCommand(new CacheSourcePaths(context));
     }
 
 
