@@ -10,17 +10,17 @@
 	"engines": {
 		 "vscode": "^1.4.0"
 	},
-	"icon": "images/mock-debug-icon.svg",
+	"icon": "images/icon.svg",
 	"categories": [
 		"Debuggers"
 	],
 	"private": true,
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-mock-debug.git"
+		"url": "https://github.com/nulld/vscode_fdb_adapter.git"
 	},
 	"bugs": {
-		"url": "https://github.com/Microsoft/vscode-mock-debug/issues"
+		"url": "https://github.com/nulld/vscode_fdb_adapter/issues"
 	},
 	"dependencies": {
 		"vscode-debugprotocol": "1.8.0-pre.3",
@@ -31,15 +31,15 @@
 		"mocha": "^2.4.5"
 	},
 	"scripts": {
-		"postinstall": "node ./node_modules/vscode/bin/install"
+		
 	},
 	"contributes": {
 		"debuggers": [
 			{
 				"type": "fdb",
-				"label": "FDB Debug",
+				"label": "Fdb Debug",
 
-				"enableBreakpointsFor": { "languageIds": [ "haxe", "as3" ] },
+				"enableBreakpointsFor": { "languageIds": [ "haxe"] },
 
 				"program": "./bin/adapter.js",
 				"runtime": "node",
@@ -50,13 +50,23 @@
 						"properties": {
 							"program": {
 								"type": "string",
-								"description": "Workspace relative path to a swf file.",
-								"default": "readme.md"
-							},
-							"stopOnEntry": {
-								"type": "boolean",
-								"description": "Automatically stop after launch.",
-								"default": true
+								"description": "full path to a swf file.",
+								"default": "${workspaceRoot}/bin/your.swf"
+							}
+							, "compilePath" :{
+								"type": "string",
+								"description": "full path where compile must be executed",
+								"default": "${workspaceRoot}"
+							}
+							, "compileCommand" :{
+								"type": "string",
+								"description": "compile command",
+								"default": "haxe build.hxml"
+							}
+							, "request" : {
+								"type": "string"
+								, "description": "launch | compileAndLaunch"
+								, "default" : "launch"
 							}
 						}
 					}
@@ -67,8 +77,7 @@
 					    "name": "FDB-Debug",
 						"type": "fdb",
 						"request": "launch",
-						"program": "your.swf",
-						"stopOnEntry": true
+						"program": "${workspaceRoot}/bin/your.swf"
 					}
 				]
 			}

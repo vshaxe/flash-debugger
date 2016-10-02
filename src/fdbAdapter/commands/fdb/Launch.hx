@@ -1,11 +1,13 @@
 package fdbAdapter.commands.fdb;
 import protocol.debug.Types.LaunchResponse;
+import protocol.debug.Types;
 import adapter.ProtocolServer;
+import js.node.Fs;
 
 typedef FDBLaunchRequestArguments =
 {
    > protocol.debug.Types.LaunchRequestArguments,
-   var programPath:String;
+   var program:String;
 } 
 
 class Launch extends DebuggerCommand {
@@ -20,19 +22,36 @@ class Launch extends DebuggerCommand {
     }
 
     override function execute() {
-        var program = args.programPath;
+        var program = args.program;
+
+        if (!PathUtils.isAbsolutePath(program)) {
+			if (!PathUtils.isOnPath(program)) {
+                response.success = false;
+                response.message = 'Cannot find runtime $program on PATH.';
+                protocol.sendResponse(response);
+				return;
+			}
+        } 
+        else if (!Fs.existsSync(program)) {
+            response.success = false;
+            response.message = 'Cannot find $program';
+			protocol.sendResponse(response);
+			return;
+        }
+
         debugger.send('run $program');
+        context.sendToOutput('running $program', OutputEventCategory.stdout);
     }
     
     override public function processDebuggerOutput(lines:Array<String>) {
         var matchingOutputLine = lines[lines.length - 1];
-        if (matchSWFConnected( matchingOutputLine ))
-        {
-            protocol.sendResponse( response );
-            setDone();
+        for (line in lines) {
+            if (matchSWFConnected(line)) {
+                protocol.sendResponse( response );
+                context.sendToOutput("swf connected", OutputEventCategory.stdout);
+                setDone();
+            }
         }
-        else
-            trace( 'Launch FAILED: [ $lines ]');
     }
 
     function matchSWFConnected(data:String):Bool {

@@ -5,22 +5,13 @@ import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
+import adapter.DebugSession.OutputEvent as OutputEventImpl;
 
 import fdbAdapter.commands.fdb.*;
-import fdbAdapter.FDBServer.FDBConfig;
 import fdbAdapter.types.VarRequestType;
 import haxe.ds.Option;
 
-typedef AdapterConfig = {
-    var fdbConfig : FDBConfig;
-}
-
 class FDBAdapter extends adapter.DebugSession {
-
-    static var config:AdapterConfig;
-    public static function setup(config:AdapterConfig) {
-        FDBAdapter.config = config;
-    }
 
     var breakpointsManager:BreakpointsManager;
     var debugger:IDebugger;
@@ -41,13 +32,16 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function initializeRequest(response:InitializeResponse, args:InitializeRequestArguments) {
-        if (config == null) {
-            response.success = false;
-            response.message = "setup with config first";
-            sendResponse(response);
-            return;
-        }
-        debugger = new FDBServer(config.fdbConfig, processDebuggerOutput);
+        var scriptPath = js.Node.__dirname;
+        var cliAdapterConfig = {
+            cmd:"java",
+            cmdParams:["-Duser.language=en", "-jar", '$scriptPath/fdb/fdb.jar'],
+            prompt:"(fdb) ",
+            onPromptGot:onPromptGot,
+            allOutputReceiver:allOutputReceiver
+        };
+
+        debugger = new CLIAdapter(cliAdapterConfig);
         context = new Context(this, debugger);
         breakpointsManager = new BreakpointsManager(context);
 
@@ -57,7 +51,7 @@ class FDBAdapter extends adapter.DebugSession {
         response.body.supportsConfigurationDoneRequest = true;
         response.body.supportsEvaluateForHovers = false;
         response.body.supportsStepBack = false;
-
+        context.sendToOutput("fdb initializing");
         this.sendResponse( response );
     }
 
@@ -65,7 +59,6 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.queueCommand(new Launch(context, response, cast args));
         debugger.queueCommand(new CacheSourcePaths(context));
     }
-
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
         breakpointsManager.setBreakPointsRequest(response, args );
@@ -149,7 +142,7 @@ class FDBAdapter extends adapter.DebugSession {
         sendResponse(response);
     }
 
-    function processDebuggerOutput(lines:Array<String>) {        
+    function onPromptGot(lines:Array<String>) {
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:
                 if (greetingMatched(lines)) {
@@ -163,9 +156,25 @@ class FDBAdapter extends adapter.DebugSession {
                 if (breakpointMet(lines)) {
                     context.enterStoppedState("breakpoint");
                 }
-
             case _:
+         
         }
+    }
+
+    function allOutputReceiver(string:String):Bool {
+        var procceed:Bool = false;
+        switch (context.debuggerState) {
+            case EDebuggerState.Running:
+                var lines = string.split("\r\n");
+                var traceR = ~/\[trace\](.*)/;
+                for (line in lines)
+                    if (traceR.match(line)) {
+                        context.sendToOutput(line);
+                        procceed = true;
+                    }
+            default:
+        }
+        return procceed;
     }
 
     function greetingMatched(lines:Array<String>):Bool {
@@ -183,6 +192,10 @@ class FDBAdapter extends adapter.DebugSession {
                 return true;
         }
         return false;
+    }
+
+    function traceMatched(lines:Array<String>):Bool {
+        return true;
     }
 
     function getVariablesRequestType(varId:String):VarRequestType {
