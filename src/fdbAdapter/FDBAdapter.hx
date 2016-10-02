@@ -62,11 +62,6 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
-        var customArgs:{
-            var sourcePath:String;
-        } = cast args;
-
-        context.sourcePath = customArgs.sourcePath;
         debugger.queueCommand(new Launch(context, response, cast args));
         debugger.queueCommand(new CacheSourcePaths(context));
     }

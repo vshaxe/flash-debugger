@@ -1,19 +1,22 @@
 package fdbAdapter;
 import adapter.DebugSession;
 import js.node.Fs;
+
 class Main
 {
-    public static function main() {
+    static var scriptPath:String;
+    static function main() {
+        setupTrace();
+        scriptPath = js.Node.__dirname;
         FDBAdapter.setup( {fdbConfig : { 
             fdbCmd : "java"
-            , fdbCmdParams : ["-Duser.language=en", "-jar", "fdb/fdb.jar"]
+            , fdbCmdParams : ["-Duser.language=en", "-jar", '$scriptPath/fdb/fdb.jar']
         }});
         DebugSession.run( FDBAdapter );
-        setupTrace();
     }
 
     static function setupTrace() {
-        Fs.writeFile('log.txt', "", 'utf8', function(e){});
+        Fs.writeFile('$scriptPath/../log.txt', "", 'utf8', function(e){});
         haxe.Log.trace = function(v, ?i) {
             var r = [Std.string(v)];
             if (i != null && i.customParams != null) {
@@ -25,6 +28,6 @@ class Main
     }
 
     static function Log(input:{type:String, message:String}) {
-        Fs.appendFile('log.txt', haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
+        Fs.appendFile('$scriptPath/../log.txt', haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
     }
 }

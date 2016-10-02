@@ -5,9 +5,7 @@ import adapter.ProtocolServer;
 typedef FDBLaunchRequestArguments =
 {
    > protocol.debug.Types.LaunchRequestArguments,
-    var runPath:String;
-    var runCommand:String;
-    var sourcePath:String;
+   var programPath:String;
 } 
 
 class Launch extends DebuggerCommand {
@@ -22,7 +20,7 @@ class Launch extends DebuggerCommand {
     }
 
     override function execute() {
-        var program = args.runPath + "/" + args.runCommand;
+        var program = args.programPath;
         debugger.send('run $program');
     }
     

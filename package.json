@@ -8,7 +8,7 @@
 		"name": "nulld"
 	},
 	"engines": {
-		"vscode": "^0.10.2"
+		 "vscode": "^1.4.0"
 	},
 	"icon": "images/mock-debug-icon.svg",
 	"categories": [
@@ -28,11 +28,10 @@
 	},
 	"devDependencies": {
 		"typescript": "^1.8.5",
-		"mocha": "^2.4.5",
-		"vscode-debugadapter-testsupport": "1.8.0-pre.3"
+		"mocha": "^2.4.5"
 	},
 	"scripts": {
-		
+		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
 	"contributes": {
 		"debuggers": [
