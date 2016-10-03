@@ -35,7 +35,7 @@ class FDBAdapter extends adapter.DebugSession {
         var scriptPath = js.Node.__dirname;
         var cliAdapterConfig = {
             cmd:"java",
-            cmdParams:["-Duser.language=en", "-jar", '$scriptPath/fdb/fdb.jar'],
+            cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
             prompt:"(fdb) ",
             onPromptGot:onPromptGot,
             allOutputReceiver:allOutputReceiver
