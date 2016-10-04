@@ -1,5 +1,5 @@
 package fdbAdapter.commands.fdb;
-
+import protocol.debug.Types.StopReason;
 import protocol.debug.Types.PauseResponse;
 
 
@@ -20,6 +20,6 @@ class Pause extends DebuggerCommand {
     override public function processDebuggerOutput(lines:Array<String>) {
         setDone();
         protocol.sendResponse(response);
-        context.enterStoppedState("pause");
+        context.enterStoppedState(StopReason.pause);
     }
 }

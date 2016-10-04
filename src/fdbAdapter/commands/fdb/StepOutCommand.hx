@@ -1,27 +1,24 @@
 package fdbAdapter.commands.fdb;
 
-import protocol.debug.Types.StepInResponse;
+import protocol.debug.Types.StepOutResponse;
 import protocol.debug.Types.StopReason;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
-class StepInCommand extends DebuggerCommand {
+class StepOutCommand extends DebuggerCommand {
 
-    var response:StepInResponse;
+    var response:StepOutResponse;
 
-    public function new(context:Context, response:StepInResponse) {
+    public function new(context:Context, response:StepOutResponse) {
         this.response = response;
         super(context);
     }
 
     override function execute() {
-        debugger.send("step");
+        debugger.send("finish");
     }
     
     override public function processDebuggerOutput(lines:Array<String>) {
-        trace(lines);
         var line = lines[0];
-        var rStopeed = ~/Execution halted, (\S)+:([0-9]+)/;
-        
         protocol.sendResponse( response );
         protocol.sendEvent(new StoppedEventImpl(StopReason.step, 1));
         setDone();

@@ -4,6 +4,8 @@ import protocol.debug.Types;
 import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
+import protocol.debug.Types.StopReason;
+import protocol.debug.Types.MessageType;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 import adapter.DebugSession.OutputEvent as OutputEventImpl;
 
@@ -121,6 +123,10 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.queueCommand(new StepInCommand(context, response));
     }
 
+    override function stepOutRequest(response:StepOutResponse, args:StepOutArguments) {
+        debugger.queueCommand(new StepOutCommand(context, response));
+    }
+
     override function nextRequest(response:NextResponse, args:NextArguments) {
         debugger.queueCommand(new NextCommand(context, response));
     }
@@ -154,7 +160,7 @@ class FDBAdapter extends adapter.DebugSession {
 
             case EDebuggerState.Running:
                 if (breakpointMet(lines)) {
-                    context.enterStoppedState("breakpoint");
+                    context.enterStoppedState(StopReason.breakpoint);
                 }
             case _:
          
@@ -163,6 +169,15 @@ class FDBAdapter extends adapter.DebugSession {
 
     function allOutputReceiver(string:String):Bool {
         var procceed:Bool = false;
+        var exitR = ~/\[UnloadSWF\]/;
+
+        if (exitR.match(string)) {
+            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}}; 
+            sendEvent(exitedEvent);
+            debugger.stop();
+            return true;
+        }
+
         switch (context.debuggerState) {
             case EDebuggerState.Running:
                 var lines = string.split("\r\n");
