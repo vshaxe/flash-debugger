@@ -23,7 +23,7 @@ class FDBAdapter extends adapter.DebugSession {
         super();
     }
 
-    override function dispatchRequest(request: Request<Dynamic>) {
+    override function dispatchRequest(request:Request<Dynamic>) {
         trace( request );
         super.dispatchRequest(request);
     }
@@ -58,6 +58,7 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
+        
         debugger.queueCommand(new Launch(context, response, cast args));
         debugger.queueCommand(new CacheSourcePaths(context));
     }
