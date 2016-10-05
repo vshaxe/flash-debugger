@@ -12,6 +12,7 @@ import adapter.DebugSession.OutputEvent as OutputEventImpl;
 import fdbAdapter.commands.fdb.*;
 import fdbAdapter.types.VarRequestType;
 import haxe.ds.Option;
+import js.node.Fs;
 
 class FDBAdapter extends adapter.DebugSession {
 
@@ -257,4 +258,24 @@ class FDBAdapter extends adapter.DebugSession {
                 0;
         }
     }
+    
+    static function main() {
+        setupTrace();
+        DebugSession.run( FDBAdapter );
+    }
+
+    static function setupTrace() {
+        logPath = js.Node.__dirname + "/../fdb_log.txt";
+        Fs.writeFile(logPath, "", "utf8", function(e){});
+        haxe.Log.trace = function(v, ?i) {
+            var r = [Std.string(v)];
+            Log({type: "INFO", message: r.join(" ")});
+        }
+    }
+
+    static function Log(input:{type:String, message:String}) {
+        Fs.appendFile(logPath, haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
+    }
+
+    static var logPath:String;
 }

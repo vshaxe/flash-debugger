@@ -41,7 +41,7 @@
 
 				"enableBreakpointsFor": { "languageIds": [ "haxe"] },
 
-				"program": "./bin/adapter.js",
+				"program": "./bin/fdb_adapter.js",
 				"runtime": "node",
 
 				"configurationAttributes": {

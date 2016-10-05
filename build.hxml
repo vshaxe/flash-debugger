@@ -1,8 +1,8 @@
 -cp vscode_debugadapter_haxe
 -cp src
--main fdbAdapter.Main
+-main fdbAdapter.FDBAdapter
 -lib hxnodejs
--js bin/adapter.js
+-js bin/fdb_adapter.js
 
 --next 
 -lib utest
