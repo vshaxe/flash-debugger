@@ -2,10 +2,10 @@
 	"name": "haxe-debug",
 	"displayName": "Haxe Debug",
 	"version": "0.0.1",
-	"publisher": "nulld",
+	"publisher": "vshaxe",
 	"description": "Debugger for haxe",
 	"author": {
-		"name": "nulld"
+		"name": "vshaxe"
 	},
 	"engines": {
 		 "vscode": "^1.4.0"
@@ -17,10 +17,10 @@
 	"private": true,
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/nulld/vscode_fdb_adapter.git"
+		"url": "https://github.com/vshaxe/vshaxe-debugadapter.git"
 	},
 	"bugs": {
-		"url": "https://github.com/nulld/vscode_fdb_adapter/issues"
+		"url": "https://github.com/vshaxe/vshaxe-debugadapter/issues"
 	},
 	"dependencies": {
 		"vscode-debugprotocol": "1.8.0-pre.3",
@@ -37,7 +37,7 @@
 		"debuggers": [
 			{
 				"type": "fdb",
-				"label": "Fdb Debug",
+				"label": "haxe: flash debug",
 
 				"enableBreakpointsFor": { "languageIds": [ "haxe"] },
 
@@ -74,7 +74,7 @@
 
 				"initialConfigurations": [
 					{
-					    "name": "FDB-Debug",
+					    "name": "flash debug",
 						"type": "fdb",
 						"request": "launch",
 						"program": "${workspaceRoot}/bin/your.swf"
