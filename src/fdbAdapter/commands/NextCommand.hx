@@ -1,5 +1,7 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.NextResponse;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 

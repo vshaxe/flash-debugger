@@ -1,4 +1,6 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
+
+import vshaxeDebug.DebuggerCommand;
 
 class Continue extends DebuggerCommand {
     

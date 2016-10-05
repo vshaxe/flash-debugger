@@ -1,4 +1,4 @@
-package fdbAdapter.types;
+package vshaxeDebug.types;
 
 enum VarRequestType {
     Locals(frameId:Int);

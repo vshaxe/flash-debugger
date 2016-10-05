@@ -1,4 +1,4 @@
-package fdbAdapter.commands;
+package vshaxeDebug;
 import adapter.ProtocolServer;
 
 interface IQueueItem<T> {

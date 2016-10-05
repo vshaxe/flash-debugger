@@ -1,15 +1,11 @@
-package fdbAdapter;
+package vshaxeDebug;
 
 import adapter.DebugSession.Breakpoint as BreakpointImpl;
 import adapter.DebugSession.Source as SourceImpl;
 import protocol.debug.Types.SetBreakpointsArguments;
 import protocol.debug.Types.SetBreakpointsResponse;
 import protocol.debug.Types.Breakpoint;
-import fdbAdapter.commands.fdb.SetBreakpoint;
-import fdbAdapter.commands.fdb.RemoveBreakpoint;
-import fdbAdapter.commands.fdb.StopForBreakpointsSetting;
-import fdbAdapter.commands.fdb.ContinueAfterBreakpointsSet;
-import fdbAdapter.commands.DebuggerCommand;
+import vshaxeDebug.DebuggerCommand;
 
 private class CommandsBatch {
 
@@ -40,12 +36,21 @@ private class CommandsBatch {
     }
 }
 
+typedef BreakpointsCommandsFactory = {
+    var stopForBreakpointsSetting :  Context -> DebuggerCommand;
+    var continueAfterBreakpointsSet : Context -> DebuggerCommand;
+    var setBreakpoint : Context -> Breakpoint -> DebuggerCommand;
+    var removeBreakpoint : Context -> Breakpoint -> DebuggerCommand;
+}
+
 class BreakpointsManager {
     
     var context:Context;
+    var commands:BreakpointsCommandsFactory;
 
-    public function new(context:Context) {
+    public function new(context:Context, commandsFactory:BreakpointsCommandsFactory) {
         this.context = context;
+        this.commands = commandsFactory;
     }
 
     public function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
@@ -62,7 +67,7 @@ class BreakpointsManager {
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(new StopForBreakpointsSetting(context));
+                batch.add(commands.stopForBreakpointsSetting(context));
             default:
         }
 
@@ -82,20 +87,20 @@ class BreakpointsManager {
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(new ContinueAfterBreakpointsSet(context));
+                batch.add(commands.continueAfterBreakpointsSet(context));
             default:
         }
         batch.checkIsDone();
     }
     
     function addBreakpoint(breakpoint:Breakpoint, container:Array<Breakpoint>):DebuggerCommand {
-        var command = new SetBreakpoint(context, breakpoint);
+        var command = commands.setBreakpoint(context, breakpoint);
         container.push(breakpoint);
         return command;
     }
 
     function removeBreakpoint(breakpoint:Breakpoint, container:Array<Breakpoint>):DebuggerCommand {
-        var command = new RemoveBreakpoint(context, breakpoint);
+        var command = commands.removeBreakpoint(context, breakpoint);
         container.remove(breakpoint);
         return command;
     }

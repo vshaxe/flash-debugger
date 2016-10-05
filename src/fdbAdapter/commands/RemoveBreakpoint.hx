@@ -1,6 +1,7 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
-import fdbAdapter.commands.DebuggerCommand;
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.Breakpoint;
 
 class RemoveBreakpoint extends DebuggerCommand {

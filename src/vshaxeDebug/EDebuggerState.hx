@@ -1,4 +1,4 @@
-package fdbAdapter;
+package vshaxeDebug;
 
 import protocol.debug.Types.StackFrame;
 

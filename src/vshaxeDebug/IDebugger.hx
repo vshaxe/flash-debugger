@@ -1,6 +1,6 @@
-package fdbAdapter;
+package vshaxeDebug;
 
-import fdbAdapter.commands.DebuggerCommand;
+import vshaxeDebug.DebuggerCommand;
 
 interface IDebugger {
     

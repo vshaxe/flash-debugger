@@ -1,7 +1,6 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
-import protocol.debug.Types.PauseResponse;
-
+import vshaxeDebug.DebuggerCommand;
 
 class StopForBreakpointsSetting extends DebuggerCommand {
 

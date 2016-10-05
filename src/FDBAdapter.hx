@@ -1,4 +1,4 @@
-package fdbAdapter;
+package;
 
 import protocol.debug.Types;
 import adapter.DebugSession;
@@ -8,9 +8,13 @@ import protocol.debug.Types.StopReason;
 import protocol.debug.Types.MessageType;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 import adapter.DebugSession.OutputEvent as OutputEventImpl;
-
-import fdbAdapter.commands.fdb.*;
-import fdbAdapter.types.VarRequestType;
+import vshaxeDebug.EDebuggerState;
+import vshaxeDebug.IDebugger;
+import vshaxeDebug.CLIAdapter;
+import vshaxeDebug.Context;
+import vshaxeDebug.BreakpointsManager;
+import fdbAdapter.commands.*;
+import vshaxeDebug.types.VarRequestType;
 import haxe.ds.Option;
 import js.node.Fs;
 
@@ -46,7 +50,7 @@ class FDBAdapter extends adapter.DebugSession {
 
         debugger = new CLIAdapter(cliAdapterConfig);
         context = new Context(this, debugger);
-        breakpointsManager = new BreakpointsManager(context);
+        breakpointsManager = new BreakpointsManager(context, getBreakpointsCmdFactory());
 
         context.debuggerState = WaitingGreeting;
         debugger.start();
@@ -148,6 +152,15 @@ class FDBAdapter extends adapter.DebugSession {
     override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {
         debugger.stop();
         sendResponse(response);
+    }
+
+    function getBreakpointsCmdFactory():BreakpointsCommandsFactory {
+        return {
+            stopForBreakpointsSetting : fdbAdapter.commands.StopForBreakpointsSetting.new,
+            continueAfterBreakpointsSet : fdbAdapter.commands.ContinueAfterBreakpointsSet.new,
+            setBreakpoint : fdbAdapter.commands.SetBreakpoint.new,
+            removeBreakpoint : fdbAdapter.commands.RemoveBreakpoint.new
+        };
     }
 
     function onPromptGot(lines:Array<String>) {
@@ -258,7 +271,7 @@ class FDBAdapter extends adapter.DebugSession {
                 0;
         }
     }
-    
+
     static function main() {
         setupTrace();
         DebugSession.run( FDBAdapter );

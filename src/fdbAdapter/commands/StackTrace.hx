@@ -1,5 +1,8 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
+import vshaxeDebug.EDebuggerState;
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.StackTraceResponse;
 
 class StackTrace extends DebuggerCommand {

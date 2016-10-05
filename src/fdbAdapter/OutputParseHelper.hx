@@ -1,8 +1,8 @@
 package fdbAdapter;
-import fdbAdapter.types.VariableType;
-import fdbAdapter.types.VarRequestType;
+import vshaxeDebug.types.VariableType;
+import vshaxeDebug.types.VarRequestType;
 
-class FDBOutputParseHelper
+class OutputParseHelper
 {
     public static function detectExpressionType(expr:String)
     {

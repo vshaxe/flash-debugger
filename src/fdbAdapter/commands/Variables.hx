@@ -1,9 +1,11 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.VariablesResponse;
 import protocol.debug.Types.VariablesArguments;
-import fdbAdapter.types.VariableType;
-import fdbAdapter.types.VarRequestType;
+import vshaxeDebug.types.VariableType;
+import vshaxeDebug.types.VarRequestType;
 
 class Variables extends DebuggerCommand {
 
@@ -46,7 +48,7 @@ class Variables extends DebuggerCommand {
             if (rVar.match(line)) {
                 var name = rVar.matched(1);
                 var value = rVar.matched(2);
-                var type = FDBOutputParseHelper.detectExpressionType(value);
+                var type = OutputParseHelper.detectExpressionType(value);
                 var vRef = 0;
 
                 if (type == VariableType.Object)

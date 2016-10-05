@@ -1,4 +1,7 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
+
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.StopReason;
 import protocol.debug.Types.PauseResponse;
 

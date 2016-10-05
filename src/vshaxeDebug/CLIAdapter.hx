@@ -1,10 +1,10 @@
-package fdbAdapter;
+package vshaxeDebug;
 
 import js.node.child_process.ChildProcess as ChildProcessObject;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable;
-import fdbAdapter.commands.DebuggerCommand;
+import vshaxeDebug.DebuggerCommand;
 
 typedef CLIAdapterConfig = {
     var cmdParams:Array<String>;

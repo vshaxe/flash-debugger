@@ -1,6 +1,8 @@
-package fdbAdapter.commands.fdb;
+package fdbAdapter.commands;
 
-import fdbAdapter.types.VariableType;
+import vshaxeDebug.Context;
+import vshaxeDebug.DebuggerCommand;
+import vshaxeDebug.types.VariableType;
 import protocol.debug.Types.EvaluateResponse;
 import protocol.debug.Types.EvaluateArguments;
 
@@ -35,7 +37,7 @@ class Evaluate extends DebuggerCommand {
         if (rVar.match(line)) {
             var name = rVar.matched(1);
             var value = rVar.matched(2);
-            var type = FDBOutputParseHelper.detectExpressionType(value);
+            var type = OutputParseHelper.detectExpressionType(value);
             
             if (type == VariableType.Object) {
                 var vRef = context.variableHandles.create('object_$name');

@@ -1,4 +1,4 @@
-package fdbAdapter;
+package vshaxeDebug;
 
 import js.node.Path;
 import js.node.ChildProcess;
