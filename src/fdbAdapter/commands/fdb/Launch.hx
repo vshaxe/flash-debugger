@@ -62,7 +62,7 @@ class Launch extends DebuggerCommand {
             context.sendToOutput("compile ok");
             callback();
         }
-        catch(e:Dynamic) {
+        catch (e:Dynamic) {
             response.success = false;
             response.message = 'Cannot compile $compileCommand on PATH $compilePath';
             protocol.sendResponse(response);
