@@ -39,8 +39,7 @@ class Evaluate extends DebuggerCommand {
         if (rVar.match(line)) {
             var name = rVar.matched(1);
             var value = rVar.matched(2);
-            trace( 'name: $name');
-            trace( 'value: $value');
+            response.body.result = value;
             var type = OutputParseHelper.detectExpressionType(value);
             switch (type) {
                 case Object(id):

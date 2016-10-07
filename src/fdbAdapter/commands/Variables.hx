@@ -39,11 +39,15 @@ class Variables extends DebuggerCommand {
         var variables = [];
         var rVar = ~/^(.*) = (.*)$/;
 
-        var parentName = switch (requestType) {
-            case Locals(_) | Global(_) | Closure(_) | Arguments(_): 
-                "";
+        var parentName = "";
+
+        switch (requestType) {
+            case Closure(_):
+                lines.shift();
             case ObjectDetails(id, name):
-                '$name.';
+                lines.shift();
+                parentName = '$name.';
+            default:
         };
         
         for (line in lines) {
