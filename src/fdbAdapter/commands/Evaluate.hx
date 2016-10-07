@@ -29,8 +29,7 @@ class Evaluate extends DebuggerCommand {
         var rVar = ~/^(.*) = (.*)$/;
         var cantEvaluate = ~/Expression could not be evaluated./;
     
-        var line = lines[0];
-        trace('EVAL OUTPUT: $line');
+        var line = lines[0];        
         response.body = {
             result : line
             , variablesReference : 0
@@ -38,9 +37,7 @@ class Evaluate extends DebuggerCommand {
 
         if (rVar.match(line)) {
             var name = rVar.matched(1);
-            var value = rVar.matched(2);
-            trace( 'name: $name');
-            trace( 'value: $value');
+            var value = rVar.matched(2);            
             var type = OutputParseHelper.detectExpressionType(value);
             switch (type) {
                 case Object(id):

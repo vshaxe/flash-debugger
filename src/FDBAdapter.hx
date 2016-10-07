@@ -175,9 +175,12 @@ class FDBAdapter extends adapter.DebugSession {
                 else
                     trace( 'Start FAILED: [ $lines ]');
 
-            case EDebuggerState.Running:
-                if (breakpointMet(lines)) {
+            case EDebuggerState.Running:                
+                if (onBreakpoint(lines)) {
                     context.enterStoppedState(StopReason.breakpoint);
+                }
+                else if (onFault(lines)) {
+                    context.enterStoppedState(StopReason.exception);
                 }
             case _:
          
@@ -186,8 +189,7 @@ class FDBAdapter extends adapter.DebugSession {
 
     function allOutputReceiver(string:String):Bool {
         var procceed:Bool = false;
-        var exitR = ~/\[UnloadSWF\]/;
-
+        var exitR = ~/\[UnloadSWF\]/;        
         if (exitR.match(string)) {
             var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}}; 
             sendEvent(exitedEvent);
@@ -217,9 +219,18 @@ class FDBAdapter extends adapter.DebugSession {
         return (firstLine.substr(0,5) == "Adobe");
     }
 
-    function breakpointMet(lines:Array<String>):Bool {
+    function onBreakpoint(lines:Array<String>):Bool {
         for (line in lines) {
             var r = ~/Breakpoint ([0-9]+),(.*) (.+).hx:([0-9]+)/;
+            if (r.match(line))
+                return true;
+        }
+        return false;
+    }
+
+    function onFault(lines:Array<String>):Bool {        
+        for (line in lines) {
+            var r = ~/^\[Fault\].*/;
             if (r.match(line))
                 return true;
         }
