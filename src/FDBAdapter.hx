@@ -56,7 +56,7 @@ class FDBAdapter extends adapter.DebugSession {
         debugger.start();
 
         response.body.supportsConfigurationDoneRequest = true;
-        response.body.supportsEvaluateForHovers = false;
+        response.body.supportsEvaluateForHovers = true;
         response.body.supportsStepBack = false;
         context.sendToOutput("fdb initializing");
         this.sendResponse( response );
@@ -95,6 +95,7 @@ class FDBAdapter extends adapter.DebugSession {
         var scopes:Array<Scope> = [
             new ScopeImpl("Local", context.variableHandles.create('local_$frameId'), false),
             new ScopeImpl("Closure", context.variableHandles.create('closure_$frameId'), false),
+            new ScopeImpl("Args", context.variableHandles.create('args_$frameId'), true),
             new ScopeImpl("Global", context.variableHandles.create('global_$frameId'), true)
         ];
 
@@ -122,6 +123,7 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
+        trace( 'evaluate: $args');
         debugger.queueCommand(new Evaluate(context, response, args));
     }
 
@@ -238,8 +240,12 @@ class FDBAdapter extends adapter.DebugSession {
                 Global(Std.parseInt(parts[1]));
             case "closure":
                 Closure(Std.parseInt(parts[1]));
+            case "args":
+                Arguments(Std.parseInt(parts[1]));
             case "object":
-                ObjectDetails(parts[1]);
+                var objectId:Int = Std.parseInt(parts[1]);
+                var objectName:String = context.knownObjects.get(objectId); 
+                ObjectDetails(objectId, objectName);
             case _:
                 throw "unrecognized";
         }

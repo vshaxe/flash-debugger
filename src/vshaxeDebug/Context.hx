@@ -10,6 +10,7 @@ import protocol.debug.Types;
 class Context {
     
     public var variableHandles(default, null):Handles<String>;
+    public var knownObjects(default, null):Map<Int,String>;
     public var sourcePath(default, default):String;
     public var fileNameToFullPathDict(default, default):Map<String, String>;
     public var breakpoints(default, null):Map<String, Array<Breakpoint>>;
@@ -24,6 +25,7 @@ class Context {
         breakpoints = new Map<String, Array<Breakpoint>>();
         fileNameToFullPathDict = new Map<String, String>();
         variableHandles = new Handles<String>();
+        knownObjects = new Map<Int,String>();
     }
 
     public function enterStoppedState(reason:StopReason) {

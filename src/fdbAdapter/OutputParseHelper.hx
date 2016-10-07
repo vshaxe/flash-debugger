@@ -6,23 +6,25 @@ class OutputParseHelper
 {
     public static function detectExpressionType(expr:String)
     {
-        var rObjectType = ~/^\[Object \d+/;
+        var rObjectType = ~/^\[Object (\d+),/;
         var rIntType = ~/^\d+ \(0\x\d+\)/;
         var rFloatType = ~/^\d+\.\d+$/;
         var rStringType = ~/^[\\"].*[\\"]$/; 
         var rBoolType = ~/^[t|f]\S+$/;
 
-        return if (rObjectType.match(expr))
-            VariableType.Object;
+        return if (rObjectType.match(expr)) {
+            var objectId = Std.parseInt(rObjectType.matched(1));
+            VariableType.Object(objectId);
+        }
         else if (rIntType.match(expr))
-            VariableType.Int;
+            VariableType.Simple("Int");
         else if (rFloatType.match(expr))
-            VariableType.Float;
+            VariableType.Simple("Float");
         else if (rStringType.match(expr))
-            VariableType.String;
+            VariableType.Simple("String");
         else if (rBoolType.match(expr))
-            VariableType.Bool;
+            VariableType.Simple("Bool");
         else
-            VariableType.Unknown;
+            VariableType.Simple("Unknown");
     }
 }

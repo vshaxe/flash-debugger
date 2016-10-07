@@ -19,7 +19,8 @@ class Evaluate extends DebuggerCommand {
     }
 
     override public function execute() {
-        var command:String = 'print $expr';
+        var preparedExpression:String = prepareExpression(expr);
+        var command:String = 'print $preparedExpression';
         debugger.send(command);
     }
 
@@ -29,6 +30,7 @@ class Evaluate extends DebuggerCommand {
         var cantEvaluate = ~/Expression could not be evaluated./;
     
         var line = lines[0];
+        trace('EVAL OUTPUT: $line');
         response.body = {
             result : line
             , variablesReference : 0
@@ -37,11 +39,14 @@ class Evaluate extends DebuggerCommand {
         if (rVar.match(line)) {
             var name = rVar.matched(1);
             var value = rVar.matched(2);
+            trace( 'name: $name');
+            trace( 'value: $value');
             var type = OutputParseHelper.detectExpressionType(value);
-            
-            if (type == VariableType.Object) {
-                var vRef = context.variableHandles.create('object_$name');
-                response.body.variablesReference = vRef;
+            switch (type) {
+                case Object(id):
+                    var vRef = context.variableHandles.create('object_$id');
+                    response.body.variablesReference = vRef;
+                default:
             }
         }
 
@@ -49,4 +54,15 @@ class Evaluate extends DebuggerCommand {
         setDone();
     }
 
+    function prepareExpression(raw:String):String {
+        var dotStarts = ~/^\..*/;
+        var colonStarts = ~/^:.*/;
+        if (dotStarts.match(raw)) {
+            return 'this$raw';
+        } 
+        else if (colonStarts.match(raw)) {
+            return "";
+        }
+        return raw;
+    }
 }

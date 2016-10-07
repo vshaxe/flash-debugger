@@ -2,7 +2,8 @@ package vshaxeDebug.types;
 
 enum VarRequestType {
     Locals(frameId:Int);
+    Arguments(frameId:Int);
     Global(frameId:Int);
     Closure(frameId:Int);
-    ObjectDetails(name:String);
+    ObjectDetails(id:Int, name:String);
 }

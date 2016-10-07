@@ -23,11 +23,13 @@ class Variables extends DebuggerCommand {
         var command:String = switch (requestType) {
             case Locals(frameId):
                 "info locals";
+            case Arguments(frameId):
+                "info arguments";
             case Global(frameId):
                 "info global";
             case Closure(fameId):
                 "print this.";
-            case ObjectDetails(name):
+            case ObjectDetails(_, name):
                 'print $name.';
         }
         debugger.send(command);
@@ -38,9 +40,9 @@ class Variables extends DebuggerCommand {
         var rVar = ~/^(.*) = (.*)$/;
 
         var parentName = switch (requestType) {
-            case Locals(_) | Global(_) | Closure(_): 
+            case Locals(_) | Global(_) | Closure(_) | Arguments(_): 
                 "";
-            case ObjectDetails(name):
+            case ObjectDetails(id, name):
                 '$name.';
         };
         
@@ -51,12 +53,19 @@ class Variables extends DebuggerCommand {
                 var type = OutputParseHelper.detectExpressionType(value);
                 var vRef = 0;
 
-                if (type == VariableType.Object)
-                    vRef = context.variableHandles.create('object_$parentName$name');
+                var varType:String = switch (type)
+                {
+                    case Object(id):
+                        vRef = context.variableHandles.create('object_$id');
+                        context.knownObjects.set(id, '$parentName$name');
+                        "Object";
+                    case Simple(type):
+                        type;
+                }
                     
                 variables.push({
                     name: name,
-                    type: type,
+                    type: varType,
                     value: value,
                     variablesReference: vRef 
                 });
