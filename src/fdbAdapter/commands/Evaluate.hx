@@ -29,8 +29,7 @@ class Evaluate extends DebuggerCommand {
         var rVar = ~/^(.*) = (.*)$/;
         var cantEvaluate = ~/Expression could not be evaluated./;
     
-        var line = lines[0];
-        trace('EVAL OUTPUT: $line');
+        var line = lines[0];        
         response.body = {
             result : line
             , variablesReference : 0
