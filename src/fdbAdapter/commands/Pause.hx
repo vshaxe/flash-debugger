@@ -23,6 +23,6 @@ class Pause extends DebuggerCommand {
     override public function processDebuggerOutput(lines:Array<String>) {
         setDone();
         protocol.sendResponse(response);
-        context.enterStoppedState(StopReason.pause);
+        context.onEvent(Stop(StopReason.pause));
     }
 }

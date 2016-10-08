@@ -63,15 +63,7 @@ class StackTrace extends DebuggerCommand {
         response.body = {
             stackFrames : frames
         };
-
-        switch (context.debuggerState) {
-            case EDebuggerState.Stopped(_, currentFrame):
-                context.debuggerState = EDebuggerState.Stopped(frames, currentFrame);
-            
-            default:
-                throw "wrong state";
-        }
-
+        context.onEvent(SetFrames(frames));
         protocol.sendResponse(response);
         setDone();
     }

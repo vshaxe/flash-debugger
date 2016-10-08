@@ -52,7 +52,6 @@ class FDBAdapter extends adapter.DebugSession {
         context = new Context(this, debugger);
         breakpointsManager = new BreakpointsManager(context, getBreakpointsCmdFactory());
 
-        context.debuggerState = WaitingGreeting;
         debugger.start();
 
         response.body.supportsConfigurationDoneRequest = true;
@@ -169,18 +168,17 @@ class FDBAdapter extends adapter.DebugSession {
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:
                 if (greetingMatched(lines)) {
-                    context.debuggerState = EDebuggerState.Configuring;
-                    sendEvent( new InitializedEvent());
+                    context.onEvent(GreetingReceived);
                 }
                 else
                     trace( 'Start FAILED: [ $lines ]');
 
             case EDebuggerState.Running:                
                 if (onBreakpoint(lines)) {
-                    context.enterStoppedState(StopReason.breakpoint);
+                    context.onEvent(Stop(StopReason.breakpoint));
                 }
                 else if (onFault(lines)) {
-                    context.enterStoppedState(StopReason.exception);
+                    context.onEvent(Stop(StopReason.exception));
                 }
             case _:
          
@@ -235,10 +233,6 @@ class FDBAdapter extends adapter.DebugSession {
                 return true;
         }
         return false;
-    }
-
-    function traceMatched(lines:Array<String>):Bool {
-        return true;
     }
 
     function getVariablesRequestType(varId:String):VarRequestType {
