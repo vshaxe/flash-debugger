@@ -2,7 +2,6 @@ package fdbAdapter.commands;
 
 import vshaxeDebug.Context;
 import vshaxeDebug.DebuggerCommand;
-import vshaxeDebug.types.VariableType;
 import protocol.debug.Types.EvaluateResponse;
 import protocol.debug.Types.EvaluateArguments;
 

@@ -1,9 +1,9 @@
 package vshaxeDebug;
 
-import js.node.child_process.ChildProcess as ChildProcessObject;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable.ReadableEvent;
+import js.node.child_process.ChildProcess as ChildProcessObject;
 
 typedef CLIAdapterConfig = {
     var cmdParams:Array<String>;

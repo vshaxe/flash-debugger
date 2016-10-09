@@ -1,4 +1,4 @@
-package vshaxeDebug.types;
+package vshaxeDebug;
 
 enum VariableType {
     Object(id:Int);

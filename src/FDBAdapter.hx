@@ -1,21 +1,19 @@
 package;
 
-import js.node.Fs;
-import haxe.ds.Option;
-import adapter.DebugSession;
-import protocol.debug.Types;
-import vshaxeDebug.Context;
 import fdbAdapter.commands.*;
+import vshaxeDebug.Context;
 import vshaxeDebug.IDebugger;
 import vshaxeDebug.CLIAdapter;
-import vshaxeDebug.types.EScope;
+import vshaxeDebug.EScope;
 import vshaxeDebug.CommandsBatch;
 import vshaxeDebug.EDebuggerState;
 import vshaxeDebug.BreakpointsManager;
-import protocol.debug.Types.StopReason;
-import protocol.debug.Types.MessageType;
+import protocol.debug.Types;
+import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
+import js.node.Fs;
+import haxe.ds.Option;
 
 class FDBAdapter extends adapter.DebugSession {
 

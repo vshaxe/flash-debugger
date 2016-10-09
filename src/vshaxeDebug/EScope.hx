@@ -1,4 +1,4 @@
-package vshaxeDebug.types;
+package vshaxeDebug;
 
 @:enum 
 abstract ScopeLocalsType(Int) {

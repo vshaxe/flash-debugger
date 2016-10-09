@@ -1,7 +1,6 @@
 package fdbAdapter.commands;
 
 import vshaxeDebug.Context;
-import vshaxeDebug.EDebuggerState;
 import vshaxeDebug.DebuggerCommand;
 
 class FrameDown extends DebuggerCommand {

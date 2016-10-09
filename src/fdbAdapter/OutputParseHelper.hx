@@ -1,6 +1,6 @@
 package fdbAdapter;
 
-import vshaxeDebug.types.VariableType;
+import vshaxeDebug.VariableType;
 
 class OutputParseHelper
 {

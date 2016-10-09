@@ -1,7 +1,7 @@
 package fdbAdapter.commands;
 
 import vshaxeDebug.Context;
-import vshaxeDebug.types.EScope;
+import vshaxeDebug.EScope;
 import vshaxeDebug.DebuggerCommand;
 import protocol.debug.Types.Variable;
 import protocol.debug.Types.VariablesArguments;
