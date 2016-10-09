@@ -1,8 +1,8 @@
 package vshaxeDebug;
 
-import adapter.DebugSession.InitializedEvent;
 import protocol.debug.Types.StackFrame;
 import protocol.debug.Types.StopReason;
+import adapter.DebugSession.InitializedEvent;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
 enum EDebuggerState {

@@ -1,30 +1,31 @@
 package fdbAdapter.commands;
 
 import vshaxeDebug.Context;
+import vshaxeDebug.types.EScope;
 import vshaxeDebug.DebuggerCommand;
-import protocol.debug.Types.VariablesResponse;
+import protocol.debug.Types.Variable;
 import protocol.debug.Types.VariablesArguments;
-import vshaxeDebug.types.VariableType;
-import vshaxeDebug.types.VarRequestType;
 
 class Variables extends DebuggerCommand {
 
     var args:VariablesArguments;
-    var response:VariablesResponse;
-    var requestType:VarRequestType;
+    var variables:Array<Variable>;
+    var scope:EScope;
     
-    public function new(context:Context, response:VariablesResponse, requestType:VarRequestType) {
+    public function new(context:Context, scope:EScope, result:Array<Variable>) {
         super(context);
-        this.response = response;
-        this.requestType = requestType;
+        this.scope = scope;
+        this.variables = result;
     }
 
     override public function execute() {
-        var command:String = switch (requestType) {
-            case Locals(frameId):
+        var command:String = switch (scope) {
+            case Locals(frameId, LocalVariables):
                 "info locals";
-            case Arguments(frameId):
+            case Locals(frameId, FunctionArguments):
                 "info arguments";
+            case Locals(frameId, NotSpecified):
+                "info locals";
             case Global(frameId):
                 "info global";
             case Closure(fameId):
@@ -36,12 +37,10 @@ class Variables extends DebuggerCommand {
     }
 
     override public function processDebuggerOutput(lines:Array<String>) {
-        var variables = [];
         var rVar = ~/^(.*) = (.*)$/;
-
         var parentName = "";
 
-        switch (requestType) {
+        switch (scope) {
             case Closure(_):
                 lines.shift();
             case ObjectDetails(id, name):
@@ -75,10 +74,8 @@ class Variables extends DebuggerCommand {
                 });
             }
         }
-        response.body = {
-            variables : variables
-        };
-        protocol.sendResponse(response);
+
+        trace('Variables: $variables');
         setDone();
     }
 }

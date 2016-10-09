@@ -1,7 +1,5 @@
 package vshaxeDebug;
 
-import vshaxeDebug.DebuggerCommand;
-
 interface IDebugger {
     
     function start():Void;

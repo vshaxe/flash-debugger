@@ -1,22 +1,21 @@
 package;
 
-import protocol.debug.Types;
+import js.node.Fs;
+import haxe.ds.Option;
 import adapter.DebugSession;
-import adapter.DebugSession.Thread as ThreadImpl;
-import adapter.DebugSession.Scope as ScopeImpl;
-import protocol.debug.Types.StopReason;
-import protocol.debug.Types.MessageType;
-import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
-import adapter.DebugSession.OutputEvent as OutputEventImpl;
-import vshaxeDebug.EDebuggerState;
+import protocol.debug.Types;
+import vshaxeDebug.Context;
+import fdbAdapter.commands.*;
 import vshaxeDebug.IDebugger;
 import vshaxeDebug.CLIAdapter;
-import vshaxeDebug.Context;
+import vshaxeDebug.types.EScope;
+import vshaxeDebug.CommandsBatch;
+import vshaxeDebug.EDebuggerState;
 import vshaxeDebug.BreakpointsManager;
-import fdbAdapter.commands.*;
-import vshaxeDebug.types.VarRequestType;
-import haxe.ds.Option;
-import js.node.Fs;
+import protocol.debug.Types.StopReason;
+import protocol.debug.Types.MessageType;
+import adapter.DebugSession.Thread as ThreadImpl;
+import adapter.DebugSession.Scope as ScopeImpl;
 
 class FDBAdapter extends adapter.DebugSession {
 
@@ -94,7 +93,6 @@ class FDBAdapter extends adapter.DebugSession {
         var scopes:Array<Scope> = [
             new ScopeImpl("Local", context.variableHandles.create('local_$frameId'), false),
             new ScopeImpl("Closure", context.variableHandles.create('closure_$frameId'), false),
-            new ScopeImpl("Args", context.variableHandles.create('args_$frameId'), true),
             new ScopeImpl("Global", context.variableHandles.create('global_$frameId'), true)
         ];
 
@@ -106,9 +104,17 @@ class FDBAdapter extends adapter.DebugSession {
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
         var id = args.variablesReference;
-        var varId:String = context.variableHandles.get(id);
-        var requestType:VarRequestType = getVariablesRequestType(varId);
-        var framesDiff:Int = getFramesDiff(requestType);
+        var handleId:String = context.variableHandles.get(id);
+        var scope:EScope = getScopeOfHandle(handleId);
+        var framesDiff:Int = getFramesDiff(scope);
+        var variablesResult:Array<protocol.debug.Variable> = [];
+
+        var callback = function() {
+            response.body = {
+                variables : variablesResult
+            };
+            sendResponse(response);
+        };
 
         if (framesDiff != 0) {
             for (i in 0...Math.floor(Math.abs(framesDiff))) {   
@@ -118,7 +124,15 @@ class FDBAdapter extends adapter.DebugSession {
                     debugger.queueCommand(new FrameDown(context));
             }
         }
-        debugger.queueCommand(new Variables(context, response, requestType));
+
+        var batch = new CommandsBatch(context.debugger, callback);
+        switch (scope) {
+            case Locals(frameId, _):
+                batch.add(new Variables(context, Locals(frameId, FunctionArguments), variablesResult));
+                batch.add(new Variables(context, Locals(frameId, LocalVariables), variablesResult));
+            case _:
+                batch.add(new Variables(context, scope, variablesResult));
+        }
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
@@ -235,30 +249,29 @@ class FDBAdapter extends adapter.DebugSession {
         return false;
     }
 
-    function getVariablesRequestType(varId:String):VarRequestType {
-        var parts:Array<String> = varId.split("_");
-        var requestType = parts[0];
-        return switch (requestType) {
+    function getScopeOfHandle(handleId:String):EScope {
+        var parts:Array<String> = handleId.split("_");
+        var prefix = parts[0];
+
+        return switch (prefix) {
             case "local":
-                Locals(Std.parseInt(parts[1]));
+                Locals(Std.parseInt(parts[1]), ScopeLocalsType.NotSpecified);
             case "global":
                 Global(Std.parseInt(parts[1]));
             case "closure":
                 Closure(Std.parseInt(parts[1]));
-            case "args":
-                Arguments(Std.parseInt(parts[1]));
             case "object":
                 var objectId:Int = Std.parseInt(parts[1]);
                 var objectName:String = context.knownObjects.get(objectId); 
                 ObjectDetails(objectId, objectName);
             case _:
-                throw "unrecognized";
+                throw "could not recognize";
         }
     }
 
-    function getFramesDiff(requestType:VarRequestType):Int {
-        var frameId:Option<Int> = switch (requestType) {
-            case Locals(frameId):
+    function getFramesDiff(scope:EScope):Int {
+        var frameId:Option<Int> = switch (scope) {
+            case Locals(frameId, _):
                 Some(frameId);
             case Global(frameId):
                 Some(frameId);

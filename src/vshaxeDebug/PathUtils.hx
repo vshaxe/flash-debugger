@@ -1,8 +1,8 @@
 package vshaxeDebug;
 
+import js.node.Fs;
 import js.node.Path;
 import js.node.ChildProcess;
-import js.node.Fs;
 
 class PathUtils
 {

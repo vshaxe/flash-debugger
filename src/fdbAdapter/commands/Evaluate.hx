@@ -31,7 +31,7 @@ class Evaluate extends DebuggerCommand {
     
         var line = lines[0];        
         response.body = {
-            result : "",
+            result : "could not be evaluated",
             variablesReference : 0
         };
 

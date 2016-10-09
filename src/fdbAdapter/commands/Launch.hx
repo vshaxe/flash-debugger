@@ -1,12 +1,13 @@
 package fdbAdapter.commands;
 
-import vshaxeDebug.PathUtils;
-import vshaxeDebug.Context;
-import vshaxeDebug.DebuggerCommand;
-import protocol.debug.Types;
-import js.node.ChildProcess;
-import js.node.Buffer;
 import js.node.Fs;
+import js.node.Buffer;
+import vshaxeDebug.Context;
+import js.node.ChildProcess;
+import vshaxeDebug.PathUtils;
+import vshaxeDebug.DebuggerCommand;
+import protocol.debug.Types.LaunchResponse;
+import protocol.debug.Types.OutputEventCategory;
 
 @:enum
 abstract RequestType(String) from String

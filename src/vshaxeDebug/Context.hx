@@ -2,12 +2,11 @@ package vshaxeDebug;
 
 import adapter.Handles;
 import adapter.ProtocolServer;
-import protocol.debug.Types.StopReason;
-import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
-import adapter.DebugSession.OutputEvent as OutputEventImpl;
+import protocol.debug.Types.Breakpoint;
+import protocol.debug.Types.OutputEventCategory;
 import vshaxeDebug.EDebuggerState.StateController;
 import vshaxeDebug.EDebuggerState.EStateControlEvent;
-import protocol.debug.Types;
+import adapter.DebugSession.OutputEvent as OutputEventImpl;
 
 class Context {
     

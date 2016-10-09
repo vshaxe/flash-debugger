@@ -2,8 +2,8 @@ package fdbAdapter.commands;
 
 import vshaxeDebug.Context;
 import vshaxeDebug.DebuggerCommand;
-import protocol.debug.Types.StepInResponse;
 import protocol.debug.Types.StopReason;
+import protocol.debug.Types.StepInResponse;
 import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
 class StepInCommand extends DebuggerCommand {
