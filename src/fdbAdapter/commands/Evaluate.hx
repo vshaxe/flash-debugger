@@ -31,13 +31,15 @@ class Evaluate extends DebuggerCommand {
     
         var line = lines[0];        
         response.body = {
-            result : line
-            , variablesReference : 0
+            result : "",
+            variablesReference : 0
         };
 
         if (rVar.match(line)) {
             var name = rVar.matched(1);
             var value = rVar.matched(2);
+
+            trace('Evalute response: name = $name, value = $value');
             response.body.result = value;
             var type = OutputParseHelper.detectExpressionType(value);
             switch (type) {
