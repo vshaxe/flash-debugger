@@ -23,13 +23,14 @@ typedef FDBLaunchRequestArguments =
    var request:RequestType;
    @:optional var compileCommand:String;
    @:optional var compilePath:String;
-} 
+   @:optional var receiveAdapterOutput:Bool;
+}
 
 class Launch extends DebuggerCommand {
 
     var args:FDBLaunchRequestArguments;
     var response:LaunchResponse;
-
+    
     public function new(context:Context, response:LaunchResponse, args:FDBLaunchRequestArguments) {
         this.args = args;
         this.response = response;
@@ -47,6 +48,7 @@ class Launch extends DebuggerCommand {
 
     override public function processDebuggerOutput(lines:Array<String>) {
         var matchingOutputLine = lines[lines.length - 1];
+        trace( 'Launch: $lines');
         for (line in lines) {
             if (matchSWFConnected(line)) {
                 protocol.sendResponse( response );
@@ -66,9 +68,7 @@ class Launch extends DebuggerCommand {
             callback();
         }
         catch (e:Dynamic) {
-            response.success = false;
-            response.message = 'Cannot compile $compileCommand on PATH $compilePath';
-            protocol.sendResponse(response);
+            context.sendError(response, 'Cannot compile $compileCommand on PATH $compilePath');
         }
     }
 
@@ -76,8 +76,7 @@ class Launch extends DebuggerCommand {
         var program = args.program;
         if (!PathUtils.isAbsolutePath(program)) {
 			if (!PathUtils.isOnPath(program)) {
-                response.success = false;
-                response.message = 'Cannot find runtime $program on PATH.';
+                context.sendError(response, 'Cannot find runtime $program on PATH.');
                 protocol.sendResponse(response);
 				return;
 			}

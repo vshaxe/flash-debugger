@@ -2,6 +2,7 @@ package vshaxeDebug;
 
 import adapter.Handles;
 import adapter.ProtocolServer;
+import protocol.debug.Types.Response;
 import protocol.debug.Types.Breakpoint;
 import protocol.debug.Types.OutputEventCategory;
 import vshaxeDebug.EDebuggerState.StateController;
@@ -36,5 +37,11 @@ class Context {
 
     public function sendToOutput(output:String, category:OutputEventCategory = OutputEventCategory.console) {
         protocol.sendEvent(new OutputEventImpl(output + "\n", category));
+    }
+
+    public function sendError(response:Response<Dynamic>, message:String) {
+        response.success = false;
+        response.message =  message;
+        protocol.sendResponse(response);
     }
 }

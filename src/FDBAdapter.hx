@@ -1,5 +1,6 @@
 package;
 
+import fdbAdapter.commands.Launch;
 import fdbAdapter.commands.*;
 import vshaxeDebug.Context;
 import vshaxeDebug.IDebugger;
@@ -26,7 +27,7 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function dispatchRequest(request:Request<Dynamic>) {
-        trace( request );
+        trace( haxe.Json.stringify(request) );
         super.dispatchRequest(request);
     }
 
@@ -59,8 +60,12 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
-        
-        debugger.queueCommand(new Launch(context, response, cast args));
+        var customArgs:FDBLaunchRequestArguments = cast args;
+        if ((customArgs.receiveAdapterOutput != null) && 
+            (customArgs.receiveAdapterOutput)) {
+            redirectTraceToDebugConsole(context);
+        }
+        debugger.queueCommand(new Launch(context, response, customArgs));
         debugger.queueCommand(new CacheSourcePaths(context));
     }
 
@@ -305,6 +310,12 @@ class FDBAdapter extends adapter.DebugSession {
         haxe.Log.trace = function(v, ?i) {
             var r = [Std.string(v)];
             Log({type: "INFO", message: r.join(" ")});
+        }
+    }
+
+    static function redirectTraceToDebugConsole(context:Context) {
+        haxe.Log.trace = function(v, ?i) {
+            context.sendToOutput('FDB log: $v', OutputEventCategory.stdout);
         }
     }
 

@@ -68,6 +68,11 @@
 								, "description": "launch | compileAndLaunch"
 								, "default" : "launch"
 							}
+							, "receiveAdapterOutput" : {
+								"type" : "bool"
+								, "description" : "redirect adapter log to debug console"
+								, "default" : false
+							}
 						}
 					}
 				},
