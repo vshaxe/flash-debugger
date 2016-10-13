@@ -37,7 +37,7 @@ class Variables extends DebuggerCommand {
     }
 
     override public function processDebuggerOutput(lines:Array<String>) {
-        var rVar = ~/^(.*) = (.*)$/;
+        var rVar = ~/^ (.*) = (.*)$/;
         var parentName = "";
 
         switch (scope) {
@@ -45,7 +45,7 @@ class Variables extends DebuggerCommand {
                 lines.shift();
             case ObjectDetails(id, name):
                 lines.shift();
-                parentName = '$name.';
+                parentName = '$name';
             default:
         };
         
@@ -59,8 +59,8 @@ class Variables extends DebuggerCommand {
                 var varType:String = switch (type)
                 {
                     case Object(id):
-                        vRef = context.variableHandles.create('object_$id');
-                        context.knownObjects.set(id, '$parentName$name');
+                        vRef = context.variableHandles.create('object_$id');                        
+                        context.knownObjects.set(id, joinWithParent(name, parentName));
                         "Object";
                     case Simple(type):
                         type;
@@ -77,5 +77,15 @@ class Variables extends DebuggerCommand {
 
         trace('Variables: $variables');
         setDone();
+    }
+
+    function joinWithParent(name:String, parentName:String):String {
+        if (parentName == "")
+            return name;
+
+        if (Std.parseInt(name) != null)
+            return '$parentName[$name]';
+        else
+            return '$parentName.$name';
     }
 }
