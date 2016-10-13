@@ -52,20 +52,10 @@
 								"type": "string",
 								"description": "full path to a swf file.",
 								"default": "${workspaceRoot}/bin/your.swf"
-							}
-							, "compilePath" :{
-								"type": "string",
-								"description": "full path where compile must be executed",
-								"default": "${workspaceRoot}"
-							}
-							, "compileCommand" :{
-								"type": "string",
-								"description": "compile command",
-								"default": "haxe build.hxml"
-							}
+							}							
 							, "request" : {
 								"type": "string"
-								, "description": "launch | compileAndLaunch"
+								, "description": "launch"
 								, "default" : "launch"
 							}
 							, "receiveAdapterOutput" : {
@@ -81,6 +71,7 @@
 					{
 					    "name": "flash debug",
 						"type": "fdb",
+						"preLaunchTask": "flash debug",
 						"request": "launch",
 						"program": "${workspaceRoot}/bin/your.swf"
 					}
