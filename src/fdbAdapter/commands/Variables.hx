@@ -37,7 +37,7 @@ class Variables extends DebuggerCommand {
     }
 
     override public function processDebuggerOutput(lines:Array<String>) {
-        var rVar = ~/^ (.*) = (.*)$/;
+        var rVar = ~/^(.*) = (.*)$/;
         var parentName = "";
 
         switch (scope) {
@@ -51,7 +51,7 @@ class Variables extends DebuggerCommand {
         
         for (line in lines) {
             if (rVar.match(line)) {
-                var name = rVar.matched(1);
+                var name = StringTools.trim(rVar.matched(1));
                 var value = rVar.matched(2);
                 var type = OutputParseHelper.detectExpressionType(value);
                 var vRef = 0;
