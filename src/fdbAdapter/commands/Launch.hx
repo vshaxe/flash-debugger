@@ -9,20 +9,10 @@ import js.node.Fs;
 import js.node.Buffer;
 import js.node.ChildProcess;
 
-@:enum
-abstract RequestType(String) from String
-{
-    var launch = "launch";
-    var compileAndLaunch = "compileAndLaunch";
-}
-
 typedef FDBLaunchRequestArguments =
 {
    > protocol.debug.Types.LaunchRequestArguments,
-   var program:String;
-   var request:RequestType;
-   @:optional var compileCommand:String;
-   @:optional var compilePath:String;
+   var program:String;   
    @:optional var receiveAdapterOutput:Bool;
 }
 
@@ -38,41 +28,6 @@ class Launch extends DebuggerCommand {
     }
 
     override function execute() {
-        if (args.request == RequestType.compileAndLaunch) {
-            doCompile(doLaunch);
-        }
-        else {
-            doLaunch();
-        }
-    }
-
-    override public function processDebuggerOutput(lines:Array<String>) {
-        var matchingOutputLine = lines[lines.length - 1];
-        trace( 'Launch: $lines');
-        for (line in lines) {
-            if (matchSWFConnected(line)) {
-                protocol.sendResponse( response );
-                context.sendToOutput("swf connected", OutputEventCategory.stdout);
-                setDone();
-            }
-        }
-    }
-
-    function doCompile(callback:Void -> Void) {
-        var compileCommand:Null<String> = args.compileCommand;
-        var compilePath:Null<String> = args.compilePath;
-        try {
-            context.sendToOutput('compiling: $compileCommand');
-            var compileResult:Buffer = ChildProcess.execSync('$compileCommand', {cwd : compilePath});
-            context.sendToOutput("compile ok");
-            callback();
-        }
-        catch (e:Dynamic) {
-            context.sendError(response, 'Cannot compile $compileCommand on PATH $compilePath');
-        }
-    }
-
-    function doLaunch() {
         var program = args.program;
         if (!PathUtils.isAbsolutePath(program)) {
 			if (!PathUtils.isOnPath(program)) {
@@ -90,6 +45,18 @@ class Launch extends DebuggerCommand {
 
         debugger.send('run $program');
         context.sendToOutput('running $program', OutputEventCategory.stdout);
+    }
+
+    override public function processDebuggerOutput(lines:Array<String>) {
+        var matchingOutputLine = lines[lines.length - 1];
+        trace( 'Launch: $lines');
+        for (line in lines) {
+            if (matchSWFConnected(line)) {
+                protocol.sendResponse( response );
+                context.sendToOutput("swf connected", OutputEventCategory.stdout);
+                setDone();
+            }
+        }
     }
 
     function matchSWFConnected(data:String):Bool {
