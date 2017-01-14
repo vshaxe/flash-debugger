@@ -11,6 +11,7 @@ typedef CLIAdapterConfig = {
     var prompt:String;
     var onPromptGot:Array<String> -> Void;
     var allOutputReceiver:String -> Bool;
+
 }
 
 class CLIAdapter implements IDebugger {
@@ -26,11 +27,15 @@ class CLIAdapter implements IDebugger {
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
 
+    var linebreakSign: String;
+
+
     public function new(config:CLIAdapterConfig) {
         this.config = config;
         this.onPromptGot = config.onPromptGot;
         this.allOutputReceiver = config.allOutputReceiver;
         buffer = new Buffer(0);
+        this.linebreakSign = js.Node.process.platform == "win32" ? "\r\n" : "\n";
     }
 
     public function start() {
@@ -98,7 +103,7 @@ class CLIAdapter implements IDebugger {
         var promptLength = config.prompt.length;
         if (string.substr(-promptLength) == config.prompt) {
             var fdbOutput = string.substring(0, string.length - promptLength );
-            var lines = fdbOutput.split("\r\n");
+            var lines = fdbOutput.split(linebreakSign);
             lines.pop();
             buffer = new Buffer(0);
             if (currentCommand != null) {
