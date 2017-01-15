@@ -11,7 +11,6 @@ typedef CLIAdapterConfig = {
     var prompt:String;
     var onPromptGot:Array<String> -> Void;
     var allOutputReceiver:String -> Bool;
-
 }
 
 class CLIAdapter implements IDebugger {
@@ -27,8 +26,7 @@ class CLIAdapter implements IDebugger {
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
 
-    var linebreakSign: String;
-
+    var linebreakSign:String;
 
     public function new(config:CLIAdapterConfig) {
         this.config = config;
