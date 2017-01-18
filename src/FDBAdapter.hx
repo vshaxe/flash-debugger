@@ -1,6 +1,7 @@
 package;
 
 import fdbAdapter.commands.Launch;
+import fdbAdapter.commands.Attach;
 import fdbAdapter.commands.*;
 import vshaxeDebug.Context;
 import vshaxeDebug.IDebugger;
@@ -66,6 +67,16 @@ class FDBAdapter extends adapter.DebugSession {
             redirectTraceToDebugConsole(context);
         }
         debugger.queueCommand(new Launch(context, response, customArgs));
+        debugger.queueCommand(new CacheSourcePaths(context));
+    }
+
+    override function attachRequest(response:AttachResponse, args:AttachRequestArguments) {
+        var customArgs:FDBAttachRequestArguments = cast args;
+        if ((customArgs.receiveAdapterOutput != null) && 
+            (customArgs.receiveAdapterOutput)) {
+            redirectTraceToDebugConsole(context);
+        }
+        debugger.queueCommand(new Attach(context, response, customArgs));
         debugger.queueCommand(new CacheSourcePaths(context));
     }
 
