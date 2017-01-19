@@ -1,27 +1,24 @@
 package;
 
-import fdbAdapter.commands.Launch;
-import fdbAdapter.commands.*;
+import fdbAdapter.Translator;
+import vshaxeDebug.ITranslator;
 import vshaxeDebug.Context;
 import vshaxeDebug.IDebugger;
 import vshaxeDebug.CLIAdapter;
-import vshaxeDebug.EScope;
-import vshaxeDebug.CommandsBatch;
 import vshaxeDebug.EDebuggerState;
-import vshaxeDebug.BreakpointsManager;
+import vshaxeDebug.Types;
 import protocol.debug.Types;
 import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
 import js.node.Fs;
-import haxe.ds.Option;
 
 class FDBAdapter extends adapter.DebugSession {
 
-    var breakpointsManager:BreakpointsManager;
     var debugger:IDebugger;
     var context:Context;
-
+    var t:ITranslator;
+   
     public function new() {
         super();
     }
@@ -32,50 +29,50 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function sendResponse(response:protocol.debug.Response<Dynamic>) {
-        trace('SEND RESPONSE: $response' );
+        trace('sendResponse: $response' );
         super.sendResponse(response);
     }
 
     override function initializeRequest(response:InitializeResponse, args:InitializeRequestArguments) {
+        response.body.supportsConfigurationDoneRequest = true;
+        response.body.supportsEvaluateForHovers = true;
+        response.body.supportsStepBack = false;
+        this.sendResponse( response );
+    }
+
+    override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
         var scriptPath = js.Node.__dirname;
+        t = new Translator();
         var cliAdapterConfig = {
             cmd:"java",
             cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
             prompt:"(fdb) ",
             onPromptGot:onPromptGot,
-            allOutputReceiver:allOutputReceiver
+            allOutputReceiver:allOutputReceiver,
+            translator : t
         };
 
         debugger = new CLIAdapter(cliAdapterConfig);
-        context = new Context(this, debugger);
-        breakpointsManager = new BreakpointsManager(context, getBreakpointsCmdFactory());
-
         debugger.start();
+        context = new Context(this, debugger);
 
-        response.body.supportsConfigurationDoneRequest = true;
-        response.body.supportsEvaluateForHovers = true;
-        response.body.supportsStepBack = false;
-        context.sendToOutput("fdb initializing");
-        this.sendResponse( response );
-    }
-
-    override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
-        var customArgs:FDBLaunchRequestArguments = cast args;
+        var customArgs:ExtLaunchRequestArguments = cast args;
         if ((customArgs.receiveAdapterOutput != null) && 
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
-        debugger.queueCommand(new Launch(context, response, customArgs));
-        debugger.queueCommand(new CacheSourcePaths(context));
+        var cmd = new vshaxeDebug.commands.Launch(context, response, customArgs);
+        cmd.execute();
     }
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
-        breakpointsManager.setBreakPointsRequest(response, args );
+        var cmd = new vshaxeDebug.commands.SetBreakpoints(context, response, args);
+        cmd.execute();
     }
 
     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments) {
-        sendResponse(response);
-        debugger.queueCommand(new Continue(context));
+        debugger.queueSend(t.cmdContinue());
+        context.onEvent(Continue);
     }
 
     override function threadsRequest(response:ThreadsResponse) {
@@ -88,7 +85,8 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function stackTraceRequest(response:StackTraceResponse, args:StackTraceArguments) {
-        debugger.queueCommand( new StackTrace(context, response));
+        var cmd = new vshaxeDebug.commands.StackTrace(context, response, args);
+        cmd.execute();
     }
 
     override function scopesRequest(response:ScopesResponse, args:ScopesArguments) {
@@ -106,79 +104,52 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
-        var id = args.variablesReference;
-        var handleId:String = context.variableHandles.get(id);
-        var scope:EScope = getScopeOfHandle(handleId);
-        var framesDiff:Int = getFramesDiff(scope);
-        var variablesResult:Array<protocol.debug.Variable> = [];
-
-        var callback = function() {
-            response.body = {
-                variables : variablesResult
-            };
-            sendResponse(response);
-        };
-
-        if (framesDiff != 0) {
-            for (i in 0...Math.floor(Math.abs(framesDiff))) {   
-                if (framesDiff < 0)
-                    debugger.queueCommand(new FrameUp(context));
-                else
-                    debugger.queueCommand(new FrameDown(context));
-            }
-        }
-
-        var batch = new CommandsBatch(context.debugger, callback);
-        switch (scope) {
-            case Locals(frameId, _):
-                batch.add(new Variables(context, Locals(frameId, FunctionArguments), variablesResult));
-                batch.add(new Variables(context, Locals(frameId, LocalVariables), variablesResult));
-            case _:
-                batch.add(new Variables(context, scope, variablesResult));
-        }
+        var cmd = new vshaxeDebug.commands.Variables(context, response, args);
+        cmd.execute();
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
-        trace( 'evaluate: $args');
-        debugger.queueCommand(new Evaluate(context, response, args));
+        var cmd = new vshaxeDebug.commands.Evaluate(context, response, args);
+        cmd.execute();
     }
 
     override function stepInRequest(response:StepInResponse, args:StepInArguments) {
-        debugger.queueCommand(new StepInCommand(context, response));
+        stepRequest(t.cmdStepIn(), response);
     }
 
     override function stepOutRequest(response:StepOutResponse, args:StepOutArguments) {
-        debugger.queueCommand(new StepOutCommand(context, response));
+        stepRequest(t.cmdStepOut(), response);
     }
 
     override function nextRequest(response:NextResponse, args:NextArguments) {
-        debugger.queueCommand(new NextCommand(context, response));
+        stepRequest(t.cmdNext(), cast response);
+    }
+
+    function stepRequest<T>(cmd:String, response:protocol.debug.Response<T>) {
+        debugger.queueSend(cmd, function(_):Bool {
+            sendResponse(response);
+            sendEvent(new StoppedEvent("step", 1));
+            return true;
+        });
     }
 
     override function continueRequest(response:ContinueResponse, args:ContinueArguments) {
-        debugger.queueCommand(new Continue(context));
-        response.body = {
-            allThreadsContinued : true
-        }
-        sendResponse( response );
+        debugger.queueSend(t.cmdContinue());
+        sendResponse(response);
+        context.onEvent(Continue);
     }
 
     override function pauseRequest(response:PauseResponse, args:PauseArguments) {
-        debugger.queueCommand(new Pause(context, response));
+        debugger.queueSend(t.cmdPause(), function(_):Bool {
+            sendResponse(response);
+            context.onEvent(Stop(StopReason.pause));
+            return true;
+        });
     }
 
     override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {
         debugger.stop();
         sendResponse(response);
-    }
-
-    function getBreakpointsCmdFactory():BreakpointsCommandsFactory {
-        return {
-            stopForBreakpointsSetting : fdbAdapter.commands.StopForBreakpointsSetting.new,
-            continueAfterBreakpointsSet : fdbAdapter.commands.ContinueAfterBreakpointsSet.new,
-            setBreakpoint : fdbAdapter.commands.SetBreakpoint.new,
-            removeBreakpoint : fdbAdapter.commands.RemoveBreakpoint.new
-        };
     }
 
     function onPromptGot(lines:Array<String>) {
@@ -191,10 +162,10 @@ class FDBAdapter extends adapter.DebugSession {
                     trace( 'Start FAILED: [ $lines ]');
 
             case EDebuggerState.Running:                
-                if (onBreakpoint(lines)) {
+                if (breakpointMatched(lines)) {
                     context.onEvent(Stop(StopReason.breakpoint));
                 }
-                else if (onFault(lines)) {
+                else if (faultMatched(lines)) {
                     context.onEvent(Stop(StopReason.exception));
                 }
             case _:
@@ -216,11 +187,12 @@ class FDBAdapter extends adapter.DebugSession {
             case EDebuggerState.Running:
                 var lines = string.split("\r\n");
                 var traceR = ~/\[trace\](.*)/;
-                for (line in lines)
+                for (line in lines) {
                     if (traceR.match(line)) {
                         context.sendToOutput(line);
                         procceed = true;
                     }
+                }
             default:
         }
         return procceed;
@@ -228,75 +200,27 @@ class FDBAdapter extends adapter.DebugSession {
 
     function greetingMatched(lines:Array<String>):Bool {
         var firstLine = lines[0];
-        if (firstLine == null)
-            return false;
-
-        return (firstLine.substr(0,5) == "Adobe");
+        return (firstLine != null) ? (firstLine.substr(0, 5) == "Adobe") : false;
     }
 
-    function onBreakpoint(lines:Array<String>):Bool {
+    function breakpointMatched(lines:Array<String>):Bool {
         for (line in lines) {
             var r = ~/Breakpoint ([0-9]+),(.*) (.+).hx:([0-9]+)/;
-            if (r.match(line))
+            if (r.match(line)) {
                 return true;
+            }
         }
         return false;
     }
 
-    function onFault(lines:Array<String>):Bool {        
+    function faultMatched(lines:Array<String>):Bool {        
         for (line in lines) {
             var r = ~/^\[Fault\].*/;
-            if (r.match(line))
+            if (r.match(line)) {
                 return true;
+            }
         }
         return false;
-    }
-
-    function getScopeOfHandle(handleId:String):EScope {
-        var parts:Array<String> = handleId.split("_");
-        var prefix = parts[0];
-
-        return switch (prefix) {
-            case "local":
-                Locals(Std.parseInt(parts[1]), ScopeLocalsType.NotSpecified);
-            case "global":
-                Global(Std.parseInt(parts[1]));
-            case "closure":
-                Closure(Std.parseInt(parts[1]));
-            case "object":
-                var objectId:Int = Std.parseInt(parts[1]);
-                var objectName:String = context.knownObjects.get(objectId); 
-                ObjectDetails(objectId, objectName);
-            case _:
-                throw "could not recognize";
-        }
-    }
-
-    function getFramesDiff(scope:EScope):Int {
-        var frameId:Option<Int> = switch (scope) {
-            case Locals(frameId, _):
-                Some(frameId);
-            case Global(frameId):
-                Some(frameId);
-            case Closure(frameId):
-                Some(frameId);
-            default:
-                None;
-        }
-
-        var currentFrame = switch ( context.debuggerState ) {
-            case Stopped(frames, currentFrame):
-                Some(currentFrame);
-            default:
-                None;
-        }
-
-        return switch [frameId, currentFrame] {
-            case [ Some( requestedFrame ), Some( currentFrame ) ]:
-                currentFrame - requestedFrame;
-            default:
-                0;
-        }
     }
 
     static function main() {

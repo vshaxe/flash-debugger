@@ -11,6 +11,40 @@ typedef CLIAdapterConfig = {
     var prompt:String;
     var onPromptGot:Array<String> -> Void;
     var allOutputReceiver:String -> Bool;
+    var translator:ITranslator;
+}
+
+private class DebuggerCommand {
+
+    var cmd:String;
+    var resultReceiver:Array<String> -> Bool;
+
+    public var done(default, null):Bool;
+    public var prev:DebuggerCommand;
+    public var next:DebuggerCommand;
+
+    public function new(cmd:String, ?resultReceiver:Array<String> -> Bool) {
+        this.cmd = cmd;
+        this.resultReceiver = resultReceiver;
+        this.done = false;
+    }
+
+    public function execute(inputHandle:String -> Void) {
+        inputHandle(cmd);
+        if (resultReceiver == null) {
+            setDone();
+        }
+    }
+
+    public function processResult(lines:Array<String>) {
+        if (resultReceiver(lines)) {
+            setDone();
+        }
+    }
+
+    function setDone() {
+        done = true;
+    }
 }
 
 class CLIAdapter implements IDebugger {
@@ -26,10 +60,13 @@ class CLIAdapter implements IDebugger {
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
 
+    public var translator(default, null):ITranslator;
+
     public function new(config:CLIAdapterConfig) {
         this.config = config;
         this.onPromptGot = config.onPromptGot;
         this.allOutputReceiver = config.allOutputReceiver;
+        this.translator = config.translator;
         buffer = new Buffer(0);
     }
 
@@ -43,11 +80,17 @@ class CLIAdapter implements IDebugger {
         proc.kill("SIGINT");
     }
 
+    public function queueSend(command:String, ?callback:Array<String> -> Bool) {
+        var cmd = new DebuggerCommand(command, callback);
+        queueCommand(cmd);
+    }
+
     public function queueCommand(command:DebuggerCommand) {
         // add to the queue
         if (queueHead == null) {
             queueHead = queueTail = command;
-        } else {
+        } 
+        else {
             queueTail.next = command;
             command.prev = queueTail;
             queueTail = command;
@@ -69,7 +112,7 @@ class CLIAdapter implements IDebugger {
     }
 
     function executeCurrentCommand() {        
-        currentCommand.execute();
+        currentCommand.execute(this.send);
         if (currentCommand.done)
             removeCurrentCommand();
     }
@@ -102,7 +145,7 @@ class CLIAdapter implements IDebugger {
             lines.pop();
             buffer = new Buffer(0);
             if (currentCommand != null) {
-                currentCommand.processDebuggerOutput(lines);
+                currentCommand.processResult(lines);
                 if (currentCommand.done)
                     removeCurrentCommand();
             }

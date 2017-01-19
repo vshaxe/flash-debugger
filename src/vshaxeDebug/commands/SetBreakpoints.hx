@@ -1,29 +1,18 @@
-package vshaxeDebug;
+package vshaxeDebug.commands;
 
 import adapter.DebugSession.Breakpoint as BreakpointImpl;
 import adapter.DebugSession.Source as SourceImpl;
-import protocol.debug.Types.SetBreakpointsArguments;
-import protocol.debug.Types.SetBreakpointsResponse;
-import protocol.debug.Types.Breakpoint;
+import protocol.debug.Types;
+import vshaxeDebug.Types;
+import haxe.ds.Option;
 
-typedef BreakpointsCommandsFactory = {
-    var stopForBreakpointsSetting :  Context -> DebuggerCommand;
-    var continueAfterBreakpointsSet : Context -> DebuggerCommand;
-    var setBreakpoint : Context -> Breakpoint -> DebuggerCommand;
-    var removeBreakpoint : Context -> Breakpoint -> DebuggerCommand;
-}
+class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsArguments> {
 
-class BreakpointsManager {
-    
-    var context:Context;
-    var commands:BreakpointsCommandsFactory;
+    var result:Array<Breakpoint>;
 
-    public function new(context:Context, commandsFactory:BreakpointsCommandsFactory) {
-        this.context = context;
-        this.commands = commandsFactory;
-    }
+    override public function execute() {
+        result = [];
 
-    public function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
         var source = new SourceImpl(args.source.name, args.source.path);
         var pathKey = getKey(args.source.name);
 
@@ -37,9 +26,12 @@ class BreakpointsManager {
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(commands.stopForBreakpointsSetting(context));
+                batch.add(t.cmdPause(), function(_) {return true;});
             default:
         }
+
+        if (Lambda.count(context.fileNameToFullPathDict) == 0)
+            batch.add(t.cmdShowFiles(), onShowFiles);
 
         for (b in args.breakpoints) {
             if (previouslySet.exists(b.line)) {
@@ -47,32 +39,52 @@ class BreakpointsManager {
             } 
             else {
                 var breakpoint:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
-                batch.add(addBreakpoint(breakpoint, breakpoints));
+                var cmd:String = t.cmdAddBreakpoint(args.source.name, args.source.path, b.line);
+                batch.add(cmd, onBreakpointAdded.bind(breakpoint, breakpoints));
             }
         }
 
-        for (needToRemove in previouslySet) {
-            batch.add(removeBreakpoint(needToRemove, breakpoints));
+        for (b in previouslySet) {
+            var cmd:String = t.cmdRemoveBreakpoint(b.source.name, b.source.path, b.line);
+            batch.add(cmd, onBreakpointRemoved.bind(b, breakpoints));
         }
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(commands.continueAfterBreakpointsSet(context));
+                batch.add(t.cmdContinue());
             default:
         }
         batch.checkIsDone();
     }
-    
-    function addBreakpoint(breakpoint:Breakpoint, container:Array<Breakpoint>):DebuggerCommand {
-        var command = commands.setBreakpoint(context, breakpoint);
-        container.push(breakpoint);
-        return command;
+
+    function onShowFiles(lines:Array<String>):Bool {
+        trace('onShowFiles: ${lines.length}');
+        var rRow = ~/^([0-9]+) (.+), ([a-zA-Z0-9:.]+)$/;
+        for (l in lines) {
+            if (rRow.match(l)) {
+                context.fileNameToFullPathDict.set(rRow.matched(3), rRow.matched(2));                
+            }
+        }
+        return true;
     }
 
-    function removeBreakpoint(breakpoint:Breakpoint, container:Array<Breakpoint>):DebuggerCommand {
-        var command = commands.removeBreakpoint(context, breakpoint);
+    function onBreakpointAdded(breakpoint:Breakpoint, container:Array<Breakpoint>, lines:Array<String>):Bool {
+        var info:Option<BreakpointInfo> = t.parseAddBreakpoint(lines);
+        switch (info) {
+            case Some(bInfo):
+                breakpoint.id = bInfo.id;
+                breakpoint.source.name = bInfo.fileName;
+                breakpoint.line = bInfo.line;
+                container.push(breakpoint);
+            default:
+                this.context.sendError(response, 'AddBreakpoint FAILED: [ $lines ]');
+        }
+        return true;
+    }
+
+    function onBreakpointRemoved(breakpoint:Breakpoint, container:Array<Breakpoint>, lines:Array<String>):Bool {
         container.remove(breakpoint);
-        return command;
+        return true;
     }
 
     function commandDoneCallback(path:String, response:SetBreakpointsResponse) {
