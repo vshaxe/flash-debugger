@@ -8,12 +8,12 @@ class Evaluate extends BaseCommand<EvaluateResponse, EvaluateArguments> {
 
     override public function execute() {
         var preparedExpression:String = prepareExpression(args.expression);
-        var command:String = t.cmdEvaluate(preparedExpression);
+        var command:String = cmd.evaluate(preparedExpression);
         debugger.queueSend(command, processResult);
     }
 
     function processResult(lines:Array<String>):Bool {
-        var exprResult:Option<VariableItem> = t.parseEvaluate(lines);
+        var exprResult:Option<VariableItem> = parser.parseEvaluate(lines);
         response.body = {
             result : "could not be evaluated",
             variablesReference : 0

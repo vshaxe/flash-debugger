@@ -25,7 +25,7 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 			return;
         }
 
-        debugger.queueSend(t.cmdLaunch(program), processResult);
+        debugger.queueSend(cmd.launch(program), processResult);
         context.sendToOutput('running $program', OutputEventCategory.stdout);
     }
 

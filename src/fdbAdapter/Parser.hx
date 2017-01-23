@@ -1,67 +1,12 @@
 package fdbAdapter;
 
-import vshaxeDebug.ITranslator;
-import protocol.debug.Types;
 import vshaxeDebug.Types;
+import protocol.debug.Types;
 import haxe.ds.Option;
 
-class Translator implements ITranslator {
+class Parser implements vshaxeDebug.IParser {
 
     public function new() {}
-
-    public function cmdLaunch(program:String):String
-        return 'run $program';
-
-    public function cmdFrameUp():String 
-        return "up";
-
-    public function cmdFrameDown():String 
-        return "down";
-
-    public function cmdStepIn():String 
-        return "step";
-
-    public function cmdStepOut():String 
-        return "finish";
-
-    public function cmdNext():String 
-        return "next";
-
-    public function cmdContinue():String 
-        return "continue";
-
-    public function cmdPause():String 
-        return "\ny";
-
-    public function cmdStackTrace():String 
-        return "bt";
-
-    public function cmdAddBreakpoint(fileName:String, filePath:String, line:Int):String
-        return 'break $fileName:${line}';
-    
-    public function cmdRemoveBreakpoint(fileName:String, filePath:String, line:Int):String
-        return 'clear $fileName:${line}';
-
-    public function cmdPrintLocalVariables():String 
-        return "info locals";
-
-    public function cmdPrintFunctionArguments():String 
-        return "info arguments";
-
-    public function cmdPrintGlobalVariables():String 
-        return "info global";
-
-    public function cmdPrintObjectProperties(?objectName:String):String 
-        return 'print $objectName.';
-
-    public function cmdPrintMembers():String 
-        return "print this.";
-
-    public function cmdShowFiles():String
-        return "show files";
-
-    public function cmdEvaluate(expr:String):String
-        return 'print $expr';
 
     public function parseFunctionArguments(lines:Array<String>):Array<VariableItem>
         return parseVariables(lines);

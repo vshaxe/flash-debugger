@@ -11,7 +11,8 @@ typedef CLIAdapterConfig = {
     var prompt:String;
     var onPromptGot:Array<String> -> Void;
     var allOutputReceiver:String -> Bool;
-    var translator:ITranslator;
+    var commandBuilder:ICommandBuilder;
+    var parser:IParser;
 }
 
 private class DebuggerCommand {
@@ -60,13 +61,15 @@ class CLIAdapter implements IDebugger {
     var queueHead:DebuggerCommand;
     var queueTail:DebuggerCommand;
 
-    public var translator(default, null):ITranslator;
+    public var commandBuilder(default, null):ICommandBuilder;
+    public var parser(default, null):IParser;
 
     public function new(config:CLIAdapterConfig) {
         this.config = config;
         this.onPromptGot = config.onPromptGot;
         this.allOutputReceiver = config.allOutputReceiver;
-        this.translator = config.translator;
+        this.commandBuilder = config.commandBuilder;
+        this.parser = config.parser;
         buffer = new Buffer(0);
     }
 

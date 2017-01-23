@@ -26,12 +26,16 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(t.cmdPause(), function(_) {return true;});
+                batch.add(cmd.pause(), 
+                function(_):Bool {
+                    return true;
+                });
             default:
         }
 
-        if (Lambda.count(context.fileNameToFullPathDict) == 0)
-            batch.add(t.cmdShowFiles(), onShowFiles);
+        if (Lambda.count(context.fileNameToFullPathDict) == 0) {
+            batch.add(cmd.showFiles(), onShowFiles);
+        }
 
         for (b in args.breakpoints) {
             if (previouslySet.exists(b.line)) {
@@ -39,19 +43,19 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
             } 
             else {
                 var breakpoint:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
-                var cmd:String = t.cmdAddBreakpoint(args.source.name, args.source.path, b.line);
+                var cmd:String = cmd.addBreakpoint(args.source.name, args.source.path, b.line);
                 batch.add(cmd, onBreakpointAdded.bind(breakpoint, breakpoints));
             }
         }
 
         for (b in previouslySet) {
-            var cmd:String = t.cmdRemoveBreakpoint(b.source.name, b.source.path, b.line);
+            var cmd:String = cmd.removeBreakpoint(b.source.name, b.source.path, b.line);
             batch.add(cmd, onBreakpointRemoved.bind(b, breakpoints));
         }
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(t.cmdContinue());
+                batch.add(cmd.continueCommand());
             default:
         }
         batch.checkIsDone();
@@ -69,7 +73,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
     }
 
     function onBreakpointAdded(breakpoint:Breakpoint, container:Array<Breakpoint>, lines:Array<String>):Bool {
-        var info:Option<BreakpointInfo> = t.parseAddBreakpoint(lines);
+        var info:Option<BreakpointInfo> = parser.parseAddBreakpoint(lines);
         switch (info) {
             case Some(bInfo):
                 breakpoint.id = bInfo.id;
@@ -99,18 +103,18 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
     }
 
     function getAlreadySetMap(path:String, breakpoints:Map<String, Array<Breakpoint>>):Map<Int, Breakpoint> {
-        var result = new Map<Int, Breakpoint>();
+        var res = new Map<Int, Breakpoint>();
         if (breakpoints.exists(path)) {
             var addedForThisPath:Array<Breakpoint> = breakpoints.get(path);
             for (b in addedForThisPath) {
-                result.set(b.line, b);
+                res.set(b.line, b);
             }
         }
-        return result;
+        return res;
     }
 
     function getKey(path:String):String {
-        var result = StringTools.replace(path, "\\", "/");
-        return result;
+        var res = StringTools.replace(path, "\\", "/");
+        return res;
     }
 }

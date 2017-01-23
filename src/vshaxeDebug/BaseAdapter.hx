@@ -1,26 +1,24 @@
-package;
+package vshaxeDebug;
 
-import fdbAdapter.Translator;
-import vshaxeDebug.ITranslator;
-import vshaxeDebug.Context;
-import vshaxeDebug.IDebugger;
-import vshaxeDebug.CLIAdapter;
-import vshaxeDebug.EDebuggerState;
-import vshaxeDebug.Types;
 import protocol.debug.Types;
 import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
+import vshaxeDebug.Types;
 import js.node.Fs;
 
-class FDBAdapter extends adapter.DebugSession {
+class BaseAdapter extends adapter.DebugSession {
 
     var debugger:IDebugger;
     var context:Context;
-    var t:ITranslator;
+    var cmd:ICommandBuilder;
    
     public function new() {
         super();
+    }
+
+    function initializeContext(program:String) {
+        throw "abstract method: implement me";
     }
 
     override function dispatchRequest(request:Request<Dynamic>) {
@@ -41,37 +39,23 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
-        var scriptPath = js.Node.__dirname;
-        t = new Translator();
-        var cliAdapterConfig = {
-            cmd:"java",
-            cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
-            prompt:"(fdb) ",
-            onPromptGot:onPromptGot,
-            allOutputReceiver:allOutputReceiver,
-            translator : t
-        };
-
-        debugger = new CLIAdapter(cliAdapterConfig);
-        debugger.start();
-        context = new Context(this, debugger);
-
         var customArgs:ExtLaunchRequestArguments = cast args;
+        initializeContext(customArgs.program);   
         if ((customArgs.receiveAdapterOutput != null) && 
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
-        var cmd = new vshaxeDebug.commands.Launch(context, response, customArgs);
-        cmd.execute();
+        var command = new vshaxeDebug.commands.Launch(context, response, customArgs);
+        command.execute();
     }
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
-        var cmd = new vshaxeDebug.commands.SetBreakpoints(context, response, args);
-        cmd.execute();
+        var command = new vshaxeDebug.commands.SetBreakpoints(context, response, args);
+        command.execute();
     }
 
     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments) {
-        debugger.queueSend(t.cmdContinue());
+        debugger.queueSend(cmd.continueCommand());
         context.onEvent(Continue);
     }
 
@@ -104,25 +88,25 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function variablesRequest(response:VariablesResponse, args:VariablesArguments) {
-        var cmd = new vshaxeDebug.commands.Variables(context, response, args);
-        cmd.execute();
+        var command = new vshaxeDebug.commands.Variables(context, response, args);
+        command.execute();
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
-        var cmd = new vshaxeDebug.commands.Evaluate(context, response, args);
-        cmd.execute();
+        var command = new vshaxeDebug.commands.Evaluate(context, response, args);
+        command.execute();
     }
 
     override function stepInRequest(response:StepInResponse, args:StepInArguments) {
-        stepRequest(t.cmdStepIn(), response);
+        stepRequest(cmd.stepIn(), response);
     }
 
     override function stepOutRequest(response:StepOutResponse, args:StepOutArguments) {
-        stepRequest(t.cmdStepOut(), response);
+        stepRequest(cmd.stepOut(), response);
     }
 
     override function nextRequest(response:NextResponse, args:NextArguments) {
-        stepRequest(t.cmdNext(), cast response);
+        stepRequest(cmd.next(), cast response);
     }
 
     function stepRequest<T>(cmd:String, response:protocol.debug.Response<T>) {
@@ -134,13 +118,13 @@ class FDBAdapter extends adapter.DebugSession {
     }
 
     override function continueRequest(response:ContinueResponse, args:ContinueArguments) {
-        debugger.queueSend(t.cmdContinue());
+        debugger.queueSend(cmd.continueCommand());
         sendResponse(response);
         context.onEvent(Continue);
     }
 
     override function pauseRequest(response:PauseResponse, args:PauseArguments) {
-        debugger.queueSend(t.cmdPause(), function(_):Bool {
+        debugger.queueSend(cmd.pause(), function(_):Bool {
             sendResponse(response);
             context.onEvent(Stop(StopReason.pause));
             return true;
@@ -223,29 +207,9 @@ class FDBAdapter extends adapter.DebugSession {
         return false;
     }
 
-    static function main() {
-        setupTrace();
-        DebugSession.run( FDBAdapter );
-    }
-
-    static function setupTrace() {
-        logPath = js.Node.__dirname + "/../fdb_log.txt";
-        Fs.writeFile(logPath, "", "utf8", function(e){});
+    function redirectTraceToDebugConsole(context:Context) {
         haxe.Log.trace = function(v, ?i) {
-            var r = [Std.string(v)];
-            Log({type: "INFO", message: r.join(" ")});
+            context.sendToOutput('DebugAdapter: $v', OutputEventCategory.stdout);
         }
     }
-
-    static function redirectTraceToDebugConsole(context:Context) {
-        haxe.Log.trace = function(v, ?i) {
-            context.sendToOutput('FDB log: $v', OutputEventCategory.stdout);
-        }
-    }
-
-    static function Log(input:{type:String, message:String}) {
-        Fs.appendFile(logPath, haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
-    }
-
-    static var logPath:String;
 }

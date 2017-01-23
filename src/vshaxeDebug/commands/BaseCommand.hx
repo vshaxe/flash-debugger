@@ -6,14 +6,16 @@ class BaseCommand<ResponseType, ArgsType> {
     var debugger:IDebugger;
     var response:ResponseType;
     var args:ArgsType;
-    var t:ITranslator;
+    var cmd:ICommandBuilder;
+    var parser:IParser;
 
     public function new(context:Context, response:ResponseType, args:ArgsType) {
         this.context = context;
         this.debugger = context.debugger;
         this.response = response;
         this.args = args;
-        this.t = debugger.translator;
+        this.cmd = debugger.commandBuilder;
+        this.parser = debugger.parser;
     }
 
     public function execute() {}

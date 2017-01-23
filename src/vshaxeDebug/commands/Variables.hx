@@ -22,22 +22,22 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
         if (framesDiff != 0) {
             for (i in 0...Math.floor(Math.abs(framesDiff))) {   
                 if (framesDiff < 0)
-                    batch.add(t.cmdFrameUp());
+                    batch.add(cmd.frameUp());
                 else
-                    batch.add(t.cmdFrameDown());
+                    batch.add(cmd.frameDown());
             }
         }
 
         switch (scope) {
             case Locals(frameId, _):
-                batch.add(t.cmdPrintLocalVariables(), processResult.bind(t.parseLocalVariables));
-                batch.add(t.cmdPrintFunctionArguments(), processResult.bind(t.parseFunctionArguments));
+                batch.add(cmd.printLocalVariables(), processResult.bind(parser.parseLocalVariables));
+                batch.add(cmd.printFunctionArguments(), processResult.bind(parser.parseFunctionArguments));
             case Global(frameId):
-                batch.add(t.cmdPrintGlobalVariables(), processResult.bind(t.parseGlobalVariables));
+                batch.add(cmd.printGlobalVariables(), processResult.bind(parser.parseGlobalVariables));
             case Closure(fameId):
-                batch.add(t.cmdPrintMembers(), processResult.bind(t.parseMembers));
+                batch.add(cmd.printMembers(), processResult.bind(parser.parseMembers));
             case ObjectDetails(_, name):
-                batch.add(t.cmdPrintObjectProperties(name), processResult.bind(t.parseObjectProperties, _, name));
+                batch.add(cmd.printObjectProperties(name), processResult.bind(parser.parseObjectProperties, _, name));
         }
     }
 

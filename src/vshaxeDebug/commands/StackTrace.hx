@@ -6,11 +6,11 @@ import protocol.debug.Types;
 class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {
 
     override public function execute() {
-        debugger.queueSend(t.cmdStackTrace(), processResult);
+        debugger.queueSend(cmd.stackTrace(), processResult);
     }
 
     function processResult(lines:Array<String>):Bool {
-        var frames = t.parseStackTrace(lines, context.fileNameToFullPathDict.get);
+        var frames = parser.parseStackTrace(lines, context.fileNameToFullPathDict.get);
         response.body = {
             stackFrames : frames
         };
