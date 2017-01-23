@@ -43,3 +43,5 @@ typedef ExtLaunchRequestArguments = {
    var program:String;   
    @:optional var receiveAdapterOutput:Bool;
 }
+
+typedef ExtAttachRequestArguments = ExtLaunchRequestArguments;

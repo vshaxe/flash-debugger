@@ -26,6 +26,10 @@ class BaseAdapter extends adapter.DebugSession {
         throw "processLaunchRequest is abstract method: implement it";
     }
 
+    function processAttachRequest(response:LaunchResponse, args:ExtAttachRequestArguments) {
+        throw "processAttachRequest is abstract method: implement it";
+    }
+
     override function dispatchRequest(request:Request<Dynamic>) {
         trace( haxe.Json.stringify(request) );
         super.dispatchRequest(request);
@@ -53,6 +57,18 @@ class BaseAdapter extends adapter.DebugSession {
             redirectTraceToDebugConsole(context);
         }
         processLaunchRequest(response, customArgs);
+    }
+
+    override function attachRequest(response:AttachResponse, args:AttachRequestArguments) {
+        var customArgs:ExtLaunchRequestArguments = cast args;
+        context = createContext(customArgs.program);
+        parser = context.debugger.parser;
+        cmd = context.debugger.commandBuilder;
+        if ((customArgs.receiveAdapterOutput != null) && 
+            (customArgs.receiveAdapterOutput)) {
+            redirectTraceToDebugConsole(context);
+        }
+        processAttachRequest(response, customArgs);
     }
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {

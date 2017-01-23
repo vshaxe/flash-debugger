@@ -51,6 +51,13 @@ class Adapter extends vshaxeDebug.BaseAdapter {
         return new Context(this, debugger);
     }
 
+    override function processAttachRequest(response:AttachResponse, args:ExtAttachRequestArguments) {
+        debugger.queueSend("run", function(_):Bool {
+            context.sendToOutput('waiting..', OutputEventCategory.stdout);
+            return true;
+        });
+    }
+
     override function processLaunchRequest(response:LaunchResponse, args:ExtLaunchRequestArguments) {
         var command = new fdbAdapter.commands.Launch(context, response, args);
         command.execute();
