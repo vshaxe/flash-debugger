@@ -5,13 +5,16 @@ import vshaxeDebug.IDebugger;
 import vshaxeDebug.CLIAdapter;
 import vshaxeDebug.EDebuggerState;
 import vshaxeDebug.Types;
+import vshaxeDebug.BaseAdapter;
+import vshaxeDebug.commands.BaseCommand;
 import protocol.debug.Types;
 import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
 import js.node.Fs;
+import haxe.ds.Option;
 
-class Adapter extends vshaxeDebug.BaseAdapter {
+class Adapter extends BaseAdapter {
 
     static var logPath:String;
 
@@ -33,7 +36,28 @@ class Adapter extends vshaxeDebug.BaseAdapter {
         Fs.appendFile(logPath, haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
     }
 
-    override function createContext(program:String):Context {
+    public function new() {
+        var deps:AdapterDependencies = {
+            createContext : createContext,
+            getLaunchCommand : getLaunchCommand,
+            getAttachCommand : getAttachCommand
+        };
+        super(deps);
+    }
+
+    function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
+        return new fdbAdapter.commands.Launch(context, response, args);
+    }
+
+    function getAttachCommand(context:Context,
+                              response:AttachResponse,
+                              args:ExtAttachRequestArguments):Option<BaseCommand<AttachResponse, ExtAttachRequestArguments>> {
+                                  
+        var command:BaseCommand<AttachResponse, ExtAttachRequestArguments> = new fdbAdapter.commands.Attach(context, response, args);
+        return Some(command);
+    }
+
+    function createContext(program:String):Context {
         var scriptPath = js.Node.__dirname;
         var commandBuilder:vshaxeDebug.ICommandBuilder = new CommandBuilder();
         var parser:vshaxeDebug.IParser = new Parser();
@@ -49,17 +73,5 @@ class Adapter extends vshaxeDebug.BaseAdapter {
         debugger = new CLIAdapter(cliAdapterConfig);
         debugger.start();
         return new Context(this, debugger);
-    }
-
-    override function processAttachRequest(response:AttachResponse, args:ExtAttachRequestArguments) {
-        debugger.queueSend("run", function(_):Bool {
-            context.sendToOutput('waiting..', OutputEventCategory.stdout);
-            return true;
-        });
-    }
-
-    override function processLaunchRequest(response:LaunchResponse, args:ExtLaunchRequestArguments) {
-        var command = new fdbAdapter.commands.Launch(context, response, args);
-        command.execute();
     }
 }

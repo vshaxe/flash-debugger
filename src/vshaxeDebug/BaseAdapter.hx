@@ -5,7 +5,15 @@ import adapter.DebugSession;
 import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
 import vshaxeDebug.Types;
+import vshaxeDebug.commands.BaseCommand;
 import js.node.Fs;
+import haxe.ds.Option;
+
+typedef AdapterDependencies = {
+    function createContext(program:String):Context;
+    function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments>; 
+    function getAttachCommand(context:Context, response:AttachResponse, args:ExtAttachRequestArguments):Option<BaseCommand<AttachResponse, ExtAttachRequestArguments>>;
+}
 
 class BaseAdapter extends adapter.DebugSession {
 
@@ -13,21 +21,11 @@ class BaseAdapter extends adapter.DebugSession {
     var context:Context;
     var cmd:ICommandBuilder;
     var parser:IParser;
+    var deps:AdapterDependencies;
    
-    public function new() {
+    function new(deps:AdapterDependencies) {
         super();
-    }
-
-    function createContext(program:String):Context {
-        throw "initializeContext is abstract method: implement it";
-    }
-
-    function processLaunchRequest(response:LaunchResponse, args:ExtLaunchRequestArguments) {
-        throw "processLaunchRequest is abstract method: implement it";
-    }
-
-    function processAttachRequest(response:LaunchResponse, args:ExtAttachRequestArguments) {
-        throw "processAttachRequest is abstract method: implement it";
+        this.deps = deps;
     }
 
     override function dispatchRequest(request:Request<Dynamic>) {
@@ -49,26 +47,35 @@ class BaseAdapter extends adapter.DebugSession {
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
         var customArgs:ExtLaunchRequestArguments = cast args;
-        context = createContext(customArgs.program);
+        context = deps.createContext(customArgs.program);
+        debugger = context.debugger;
         parser = context.debugger.parser;
         cmd = context.debugger.commandBuilder;
         if ((customArgs.receiveAdapterOutput != null) && 
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
-        processLaunchRequest(response, customArgs);
+        var launchCommand:BaseCommand<LaunchResponse, LaunchRequestArguments> = deps.getLaunchCommand(context, response, customArgs);
+        launchCommand.execute();
     }
 
     override function attachRequest(response:AttachResponse, args:AttachRequestArguments) {
         var customArgs:ExtLaunchRequestArguments = cast args;
-        context = createContext(customArgs.program);
+        context = deps.createContext(customArgs.program);
+        debugger = context.debugger;
         parser = context.debugger.parser;
         cmd = context.debugger.commandBuilder;
         if ((customArgs.receiveAdapterOutput != null) && 
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
-        processAttachRequest(response, customArgs);
+        var maybeAttachCommand:Option<BaseCommand<AttachResponse, AttachRequestArguments>> = deps.getAttachCommand(context, response, customArgs);
+        switch (maybeAttachCommand) {
+            case Some(attachCommand):
+                attachCommand.execute();
+            default:
+                throw "adapter doesn't support attach";
+        }
     }
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
