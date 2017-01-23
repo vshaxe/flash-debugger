@@ -14,6 +14,11 @@ typedef BreakpointInfo = {
     var line:Int;
 }
 
+typedef SourceInfo = {
+    var name:String;
+    var path:String;
+}
+
 enum VariableType {
     Object(id:Int);
     Simple(type:String);

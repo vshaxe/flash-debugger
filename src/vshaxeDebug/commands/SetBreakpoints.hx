@@ -62,12 +62,9 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
     }
 
     function onShowFiles(lines:Array<String>):Bool {
-        trace('onShowFiles: ${lines.length}');
-        var rRow = ~/^([0-9]+) (.+), ([a-zA-Z0-9:.]+)$/;
-        for (l in lines) {
-            if (rRow.match(l)) {
-                context.fileNameToFullPathDict.set(rRow.matched(3), rRow.matched(2));                
-            }
+         var sources:Array<SourceInfo> = parser.parseShowFiles(lines);
+        for (source in sources) {
+            context.fileNameToFullPathDict.set(source.name, source.path);
         }
         return true;
     }

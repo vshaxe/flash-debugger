@@ -39,7 +39,7 @@ class Context {
         protocol.sendEvent(new OutputEventImpl(output + "\n", category));
     }
 
-    public function sendError(response:Response<Dynamic>, message:String) {
+    public function sendError(response:Response<Dynamic>, message:String):Void {
         response.success = false;
         response.message =  message;
         protocol.sendResponse(response);

@@ -88,7 +88,6 @@ class CLIAdapter implements IDebugger {
     }
 
     public function queueCommand(command:DebuggerCommand) {
-        // add to the queue
         if (queueHead == null) {
             queueHead = queueTail = command;
         } 
@@ -115,8 +114,9 @@ class CLIAdapter implements IDebugger {
 
     function executeCurrentCommand() {        
         currentCommand.execute(this.send);
-        if (currentCommand.done)
+        if (currentCommand.done) {
             removeCurrentCommand();
+        }
     }
 
     function removeCurrentCommand() {
@@ -125,14 +125,18 @@ class CLIAdapter implements IDebugger {
     }
 
     function removeCommand(command:DebuggerCommand) {
-        if (command == queueHead)
+        if (command == queueHead) {
             queueHead = command.next;
-        if (command == queueTail)
+        }
+        if (command == queueTail) {
             queueTail = command.prev;
-        if (command.prev != null)
+        }
+        if (command.prev != null) {
             command.prev.next = command.next;
-        if (command.next != null)
+        }
+        if (command.next != null) {
             command.next.prev = command.prev;
+        }
     }
 
     function onData(buf:Buffer) {
@@ -145,14 +149,16 @@ class CLIAdapter implements IDebugger {
             buffer = new Buffer(0);
             if (currentCommand != null) {
                 currentCommand.processResult(lines);
-                if (currentCommand.done)
+                if (currentCommand.done) {
                     removeCurrentCommand();
+                }
             }
             onPromptGot(lines);
         }
         else {
-            if (allOutputReceiver(rawInput))
+            if (allOutputReceiver(rawInput)) {
                 buffer = new Buffer(0);
+            }
         }
     }
 }

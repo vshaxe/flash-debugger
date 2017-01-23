@@ -14,6 +14,7 @@ interface IParser {
     function parseMembers(lines:Array<String>):Array<VariableItem>;
     function parseEvaluate(lines:Array<String>):Option<VariableItem>;
     function parseAddBreakpoint(lines:Array<String>):Option<BreakpointInfo>;
+    function parseShowFiles(lines:Array<String>):Array<SourceInfo>;
     function getLines(rawInput:String):Array<String>;
     function getLinesExceptPrompt(rawInput:String):Array<String>;
     function getTraces(rawInput:String):Array<String>;
