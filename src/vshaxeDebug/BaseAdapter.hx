@@ -12,13 +12,18 @@ class BaseAdapter extends adapter.DebugSession {
     var debugger:IDebugger;
     var context:Context;
     var cmd:ICommandBuilder;
+    var parser:IParser;
    
     public function new() {
         super();
     }
 
-    function initializeContext(program:String) {
-        throw "abstract method: implement me";
+    function createContext(program:String):Context {
+        throw "initializeContext is abstract method: implement it";
+    }
+
+    function processLaunchRequest(response:LaunchResponse, args:ExtLaunchRequestArguments) {
+        throw "processLaunchRequest is abstract method: implement it";
     }
 
     override function dispatchRequest(request:Request<Dynamic>) {
@@ -40,13 +45,14 @@ class BaseAdapter extends adapter.DebugSession {
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
         var customArgs:ExtLaunchRequestArguments = cast args;
-        initializeContext(customArgs.program);   
+        context = createContext(customArgs.program);
+        parser = context.debugger.parser;
+        cmd = context.debugger.commandBuilder;
         if ((customArgs.receiveAdapterOutput != null) && 
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
-        var command = new vshaxeDebug.commands.Launch(context, response, customArgs);
-        command.execute();
+        processLaunchRequest(response, customArgs);
     }
 
     override function setBreakPointsRequest(response:SetBreakpointsResponse, args:SetBreakpointsArguments) {
@@ -139,17 +145,17 @@ class BaseAdapter extends adapter.DebugSession {
     function onPromptGot(lines:Array<String>) {
         switch (context.debuggerState) {
             case EDebuggerState.WaitingGreeting:
-                if (greetingMatched(lines)) {
+                if (parser.isGreetingMatched(lines)) {
                     context.onEvent(GreetingReceived);
                 }
                 else
-                    trace( 'Start FAILED: [ $lines ]');
+                    trace('Start FAILED: [$lines]');
 
             case EDebuggerState.Running:                
-                if (breakpointMatched(lines)) {
+                if (parser.isStopOnBreakpointMatched(lines)) {
                     context.onEvent(Stop(StopReason.breakpoint));
                 }
-                else if (faultMatched(lines)) {
+                else if (parser.isStopOnExceptionMatched(lines)) {
                     context.onEvent(Stop(StopReason.exception));
                 }
             case _:
@@ -159,8 +165,7 @@ class BaseAdapter extends adapter.DebugSession {
 
     function allOutputReceiver(string:String):Bool {
         var procceed:Bool = false;
-        var exitR = ~/\[UnloadSWF\]/;        
-        if (exitR.match(string)) {
+        if (parser.isExitMatched(string)) {
             var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}}; 
             sendEvent(exitedEvent);
             debugger.stop();
@@ -169,42 +174,14 @@ class BaseAdapter extends adapter.DebugSession {
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                var lines = string.split("\r\n");
-                var traceR = ~/\[trace\](.*)/;
+                var lines:Array<String> = parser.getTraces(string);
                 for (line in lines) {
-                    if (traceR.match(line)) {
-                        context.sendToOutput(line);
-                        procceed = true;
-                    }
+                    context.sendToOutput(line);
+                    procceed = true;
                 }
             default:
         }
         return procceed;
-    }
-
-    function greetingMatched(lines:Array<String>):Bool {
-        var firstLine = lines[0];
-        return (firstLine != null) ? (firstLine.substr(0, 5) == "Adobe") : false;
-    }
-
-    function breakpointMatched(lines:Array<String>):Bool {
-        for (line in lines) {
-            var r = ~/Breakpoint ([0-9]+),(.*) (.+).hx:([0-9]+)/;
-            if (r.match(line)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function faultMatched(lines:Array<String>):Bool {        
-        for (line in lines) {
-            var r = ~/^\[Fault\].*/;
-            if (r.match(line)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     function redirectTraceToDebugConsole(context:Context) {

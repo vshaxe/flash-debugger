@@ -8,7 +8,6 @@ import js.node.child_process.ChildProcess as ChildProcessObject;
 typedef CLIAdapterConfig = {
     var cmdParams:Array<String>;
     var cmd:String;
-    var prompt:String;
     var onPromptGot:Array<String> -> Void;
     var allOutputReceiver:String -> Bool;
     var commandBuilder:ICommandBuilder;
@@ -139,12 +138,9 @@ class CLIAdapter implements IDebugger {
     function onData(buf:Buffer) {
         var newLength = buffer.length + buf.length;
         buffer = Buffer.concat([buffer,buf], newLength);
-        var string = buffer.toString();
-        var prompt = config.prompt;
-        var promptLength = config.prompt.length;
-        if (string.substr(-promptLength) == config.prompt) {
-            var fdbOutput = string.substring(0, string.length - promptLength );
-            var lines = fdbOutput.split("\r\n");
+        var rawInput:String = buffer.toString();
+        if (parser.isPromptMatched(rawInput)) {
+            var lines = parser.getLinesExceptPrompt(rawInput);
             lines.pop();
             buffer = new Buffer(0);
             if (currentCommand != null) {
@@ -155,8 +151,7 @@ class CLIAdapter implements IDebugger {
             onPromptGot(lines);
         }
         else {
-            var lines = string.split("\r\n");
-            if (allOutputReceiver(string))
+            if (allOutputReceiver(rawInput))
                 buffer = new Buffer(0);
         }
     }

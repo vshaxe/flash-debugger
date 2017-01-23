@@ -6,7 +6,13 @@ import haxe.ds.Option;
 
 class Parser implements vshaxeDebug.IParser {
 
-    public function new() {}
+    var prompt:String;
+    var promptLength:Int;
+
+    public function new() {
+        prompt = "(fdb) ";
+        promptLength = prompt.length;
+    }
 
     public function parseFunctionArguments(lines:Array<String>):Array<VariableItem>
         return parseVariables(lines);
@@ -82,6 +88,61 @@ class Parser implements vshaxeDebug.IParser {
             });
         }
         return result;
+    }
+
+    public function getLines(rawInput:String):Array<String> {
+        return rawInput.split("\r\n");
+    }
+
+    public function getLinesExceptPrompt(rawInput:String):Array<String> {
+        var withoutPrompt:String = rawInput.substring(0, rawInput.length - promptLength);
+        return getLines(withoutPrompt);
+    }
+
+    public function getTraces(rawInput:String):Array<String> {
+        var result:Array<String> = [];
+        var lines = getLines(rawInput);
+        var traceR = ~/\[trace\](.*)/;
+        for (line in lines) {
+            if (traceR.match(line)) {
+                result.push(line);
+            }
+        }
+        return result;
+    }
+
+    public function isPromptMatched(rawInput:String):Bool {
+        return (rawInput.substr(-promptLength) == prompt);
+    }
+
+    public function isExitMatched(rawInput:String):Bool {
+        var exitR = ~/\[UnloadSWF\]/;        
+        return (exitR.match(rawInput));
+    }
+
+    public function isGreetingMatched(lines:Array<String>):Bool {
+        var firstLine = lines[0];
+        return (firstLine != null) ? (firstLine.substr(0, 5) == "Adobe") : false;
+    }
+
+    public function isStopOnBreakpointMatched(lines:Array<String>):Bool {
+        for (line in lines) {
+            var r = ~/Breakpoint ([0-9]+),(.*) (.+).hx:([0-9]+)/;
+            if (r.match(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function isStopOnExceptionMatched(lines:Array<String>):Bool {
+        for (line in lines) {
+            var r = ~/^\[Fault\].*/;
+            if (r.match(line)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function parseVariables(lines:Array<String>):Array<VariableItem> {

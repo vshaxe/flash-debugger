@@ -33,22 +33,26 @@ class Adapter extends vshaxeDebug.BaseAdapter {
         Fs.appendFile(logPath, haxe.Json.stringify(input) + "\n", 'utf8', function(e){ });
     }
 
-    override function initializeContext(program:String) {
+    override function createContext(program:String):Context {
         var scriptPath = js.Node.__dirname;
-        cmd = new CommandBuilder();
+        var commandBuilder:vshaxeDebug.ICommandBuilder = new CommandBuilder();
         var parser:vshaxeDebug.IParser = new Parser();
         var cliAdapterConfig = {
             cmd:"java",
             cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
-            prompt:"(fdb) ",
             onPromptGot:onPromptGot,
             allOutputReceiver:allOutputReceiver,
-            commandBuilder : cmd,
+            commandBuilder : commandBuilder,
             parser : parser
         };
 
         debugger = new CLIAdapter(cliAdapterConfig);
         debugger.start();
-        context = new Context(this, debugger);
+        return new Context(this, debugger);
+    }
+
+    override function processLaunchRequest(response:LaunchResponse, args:ExtLaunchRequestArguments) {
+        var command = new fdbAdapter.commands.Launch(context, response, args);
+        command.execute();
     }
 }

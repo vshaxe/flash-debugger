@@ -1,11 +1,12 @@
-package vshaxeDebug.commands;
+package fdbAdapter.commands;
 
 import vshaxeDebug.Types;
+import vshaxeDebug.commands.BaseCommand;
 import protocol.debug.Types;
+import vshaxeDebug.PathUtils;
 import js.node.Fs;
 import js.node.Buffer;
 import js.node.ChildProcess;
-
 
 class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 
@@ -24,7 +25,6 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 			context.protocol.sendResponse(response);
 			return;
         }
-
         debugger.queueSend(cmd.launch(program), processResult);
         context.sendToOutput('running $program', OutputEventCategory.stdout);
     }
