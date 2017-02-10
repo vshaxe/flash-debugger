@@ -1,9 +1,9 @@
 # Haxe Debug
 [![Build Status](https://travis-ci.org/vshaxe/vshaxe-debugadapter.svg?branch=master)](https://travis-ci.org/vshaxe/vshaxe-debugadapter)
 
-This is an extension for debugging Haxe applications on the Flash target via [FDB][1]. It is best used with the vshaxe extension.
+This is an extension for debugging Haxe applications on the Flash target via [FDB][1]. It is best used with the [vshaxe][2] extension.
 
-Support for the C++ target via [hxcpp-debugger][2] is planned.
+Support for the C++ target via [hxcpp-debugger][3] is planned.
 
 ![](images/example.png)
 
@@ -37,4 +37,5 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`.
 5. Do `haxe build.hxml`
 
    [1]: http://help.adobe.com/en_US/flex/using/WS2db454920e96a9e51e63e3d11c0bf69084-7ffb.html
-   [2]: https://github.com/HaxeFoundation/hxcpp-debugger
+   [2]: https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe
+   [3]: https://github.com/HaxeFoundation/hxcpp-debugger
