@@ -1,7 +1,7 @@
 {
 	"name": "haxe-debug",
 	"displayName": "Haxe Debug",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"publisher": "vshaxe",
 	"description": "Debugger for Haxe",
 	"author": {
@@ -13,6 +13,10 @@
 	"icon": "images/icon.svg",
 	"categories": [
 		"Debuggers"
+	],
+	"keywords": [
+		"haxe",
+		"flash"
 	],
 	"private": true,
 	"repository": {
@@ -37,7 +41,7 @@
 		"debuggers": [
 			{
 				"type": "fdb",
-				"label": "haxe: flash debug",
+				"label": "Haxe (Flash)",
 
 				"enableBreakpointsFor": { "languageIds": [ "haxe"] },
 
@@ -52,7 +56,7 @@
 								"type": "string",
 								"description": "full path to a swf file.",
 								"default": "${workspaceRoot}/bin/your.swf"
-							}							
+							}
 							, "request" : {
 								"type": "string"
 								, "description": "launch"
@@ -83,9 +87,8 @@
 
 				"initialConfigurations": [
 					{
-					    "name": "flash debug",
+						"name": "Flash",
 						"type": "fdb",
-						"preLaunchTask": "flash debug",
 						"request": "launch",
 						"program": "${workspaceRoot}/bin/your.swf"
 					}
