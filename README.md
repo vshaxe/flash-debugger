@@ -9,7 +9,7 @@ Support for the C++ target via [hxcpp-debugger][3] is planned.
 
 ## Usage
 
-Swf files need to be compiles using the `-D fdb` define. The `launch.json` should look something like this:
+Swf files need to be compiled using the `-D fdb` define. The `launch.json` should look something like this:
 
 ```json
 { 
