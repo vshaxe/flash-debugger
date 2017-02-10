@@ -1,3 +1,4 @@
 node_modules
 bin
 fdb_log.txt
+debug.log
