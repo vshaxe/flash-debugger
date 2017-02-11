@@ -8,10 +8,12 @@ class Parser implements vshaxeDebug.IParser {
 
     var prompt:String;
     var promptLength:Int;
+    var eolSign:String;
 
-    public function new() {
+    public function new(eolSign:String) {
         prompt = "(fdb) ";
         promptLength = prompt.length;
+        this.eolSign = eolSign;
     }
 
     public function parseFunctionArguments(lines:Array<String>):Array<VariableItem>
@@ -105,7 +107,7 @@ class Parser implements vshaxeDebug.IParser {
     }
 
     public function getLines(rawInput:String):Array<String> {
-        return rawInput.split("\r\n");
+        return rawInput.split(eolSign);
     }
 
     public function getLinesExceptPrompt(rawInput:String):Array<String> {

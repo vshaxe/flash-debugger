@@ -64,6 +64,20 @@
 								, "default" : false
 							}
 						}
+					},
+					"attach": {
+						"properties": {
+							"request" : {
+								"type": "string"
+								, "description": "Attaches to a swf which is launched manually"
+								, "default" : "attach"
+							}
+							, "receiveAdapterOutput" : {
+								"type" : "bool"
+								, "description" : "redirect adapter log to debug console"
+								, "default" : false
+							}
+						}
 					}
 				},
 

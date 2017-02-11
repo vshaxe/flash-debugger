@@ -1,16 +1,15 @@
 package fdbAdapter;
 
 import vshaxeDebug.Context;
-import vshaxeDebug.IDebugger;
 import vshaxeDebug.CLIAdapter;
-import vshaxeDebug.EDebuggerState;
 import vshaxeDebug.Types;
 import vshaxeDebug.BaseAdapter;
+import vshaxeDebug.ICommandBuilder;
+import vshaxeDebug.IParser;
+import vshaxeDebug.PlatformParameters;
 import vshaxeDebug.commands.BaseCommand;
 import protocol.debug.Types;
 import adapter.DebugSession;
-import adapter.DebugSession.Thread as ThreadImpl;
-import adapter.DebugSession.Scope as ScopeImpl;
 import js.node.Fs;
 import haxe.ds.Option;
 
@@ -59,8 +58,9 @@ class Adapter extends BaseAdapter {
 
     function createContext(program:String):Context {
         var scriptPath = js.Node.__dirname;
-        var commandBuilder:vshaxeDebug.ICommandBuilder = new CommandBuilder();
-        var parser:vshaxeDebug.IParser = new Parser();
+        var commandBuilder:ICommandBuilder = new CommandBuilder();
+        var eolSign = PlatformParameters.getEndOfLineSign();
+        var parser:IParser = new Parser(eolSign);
         var cliAdapterConfig = {
             cmd:"java",
             cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],

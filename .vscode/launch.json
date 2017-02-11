@@ -17,7 +17,7 @@
 			"type": "node",
 			"request": "launch",
 			"runtimeArgs": [ "--nolazy" ],
-			"program": "${workspaceRoot}/bin/adapter.js",
+			"program": "${workspaceRoot}/bin/fdb_adapter.js",
 			"stopOnEntry": false,
 			"args": [ "--server=4711" ],
 			"sourceMaps": true,
