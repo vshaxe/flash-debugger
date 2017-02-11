@@ -1,7 +1,7 @@
 package fdbAdapter.commands;
 
-import vshaxeDebug.Types;
 import vshaxeDebug.commands.BaseCommand;
+import vshaxeDebug.Types;
 import protocol.debug.Types;
 
 class Attach extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
