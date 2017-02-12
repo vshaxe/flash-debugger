@@ -86,6 +86,7 @@ class BaseAdapter extends adapter.DebugSession {
     override function configurationDoneRequest(response:ConfigurationDoneResponse, args:ConfigurationDoneArguments) {
         debugger.queueSend(cmd.continueCommand());
         context.onEvent(Continue);
+        sendResponse(response);
     }
 
     override function threadsRequest(response:ThreadsResponse) {
