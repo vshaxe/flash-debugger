@@ -33,7 +33,7 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function sendResponse(response:protocol.debug.Response<Dynamic>) {
-        trace('sendResponse: $response' );
+        trace('sendResponse: $response');
         super.sendResponse(response);
     }
 

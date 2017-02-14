@@ -11,13 +11,13 @@ class AutomatedTests
 
     }
 
-    @:keep public function setup() 
+    @:keep public function setup()
     {
        dc = new DebugClient('node', 'bin/adapter.js', 'node');
        var p = dc.start();
     }
 
-    public function testTerminated() 
+    public function testTerminated()
     {
         var done = Assert.createAsync(10000);
         var p = Promise.all([
@@ -31,12 +31,12 @@ class AutomatedTests
              done();
          } ).catchError(function(e) {
              trace (e);
-             done(); 
+             done();
          } );
     }
 
-    @:keep public function teardown() 
+    @:keep public function teardown()
     {
        dc.stop();
     }
-} 
+}

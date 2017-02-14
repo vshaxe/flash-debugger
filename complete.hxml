@@ -1,0 +1,5 @@
+-cp vscode_debugadapter_haxe
+-cp src
+-cp test
+-lib utest
+-lib hxnodejs

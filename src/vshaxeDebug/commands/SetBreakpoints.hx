@@ -18,7 +18,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 
         if (!context.breakpoints.exists(pathKey)) {
             context.breakpoints.set(pathKey, []);
-        }      
+        }
 
         var breakpoints = context.breakpoints.get(pathKey);
         var previouslySet = getAlreadySetMap(pathKey, context.breakpoints);
@@ -40,7 +40,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
         for (b in args.breakpoints) {
             if (previouslySet.exists(b.line)) {
                 previouslySet.remove(b.line);
-            } 
+            }
             else {
                 var breakpoint:Breakpoint = new BreakpointImpl(true, b.line, 0, source);
                 var cmd:String = cmd.addBreakpoint(args.source.name, args.source.path, b.line);
