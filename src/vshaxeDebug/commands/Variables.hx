@@ -77,11 +77,11 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
         var prefix = parts[0];
 
         return switch (prefix) {
-            case "local":
+            case "locals":
                 Locals(Std.parseInt(parts[1]), ScopeLocalsType.NotSpecified);
-            case "global":
+            case "globals":
                 Global(Std.parseInt(parts[1]));
-            case "closure":
+            case "members":
                 Closure(Std.parseInt(parts[1]));
             case "object":
                 var objectId:Int = Std.parseInt(parts[1]);

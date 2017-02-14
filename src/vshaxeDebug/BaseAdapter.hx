@@ -106,9 +106,9 @@ class BaseAdapter extends adapter.DebugSession {
     override function scopesRequest(response:ScopesResponse, args:ScopesArguments) {
         var frameId:Int = args.frameId;
         var scopes:Array<Scope> = [
-            new ScopeImpl("Local", context.variableHandles.create('local_$frameId'), false),
-            new ScopeImpl("Closure", context.variableHandles.create('closure_$frameId'), false),
-            new ScopeImpl("Global", context.variableHandles.create('global_$frameId'), true)
+            new ScopeImpl("Locals", context.variableHandles.create('locals_$frameId'), false),
+            new ScopeImpl("Members", context.variableHandles.create('members_$frameId'), false),
+            new ScopeImpl("Globals", context.variableHandles.create('globals_$frameId'), true)
         ];
 
         response.body = {
