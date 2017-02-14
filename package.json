@@ -3,6 +3,7 @@
 	"displayName": "Haxe Debug",
 	"version": "1.0.0",
 	"publisher": "vshaxe",
+	"license": "MIT",
 	"description": "Debugger for Haxe",
 	"author": {
 		"name": "vshaxe"
@@ -14,6 +15,10 @@
 	"categories": [
 		"Debuggers"
 	],
+	"galleryBanner": {
+		"theme": "dark",
+		"color": "#A84B38"
+	},
 	"keywords": [
 		"haxe",
 		"flash"
