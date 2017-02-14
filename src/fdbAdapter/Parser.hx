@@ -18,7 +18,7 @@ class Parser implements vshaxeDebug.IParser {
 
     public function parseFunctionArguments(lines:Array<String>):Array<VariableItem>
         return parseVariables(lines);
-    
+
     public function parseGlobalVariables(lines:Array<String>):Array<VariableItem>
         return parseVariables(lines);
 
@@ -53,7 +53,7 @@ class Parser implements vshaxeDebug.IParser {
                     name : rMethod.matched(2) + "." + rMethod.matched(3),
                     line : Std.parseInt( rMethod.matched(5)),
                     source : { name : rMethod.matched(4), path : pathProvider(rMethod.matched(4))},
-                    column : 0 
+                    column : 0
                 });
             }
             else if (anonFunction.match(l)) {
@@ -62,7 +62,7 @@ class Parser implements vshaxeDebug.IParser {
                     name : anonFunction.matched(2) + "." + anonFunction.matched(3),
                     line : Std.parseInt( anonFunction.matched(5)),
                     source : { name : anonFunction.matched(4), path : pathProvider(anonFunction.matched(4))},
-                    column : 0 
+                    column : 0
                 });
             }
             else if (globalCall.match(l)) {
@@ -71,7 +71,7 @@ class Parser implements vshaxeDebug.IParser {
                     name : globalCall.matched(2),
                     line : Std.parseInt( globalCall.matched(4)),
                     source : { path : "global", name: "global"},
-                    column : 0 
+                    column : 0
                 });
             }
         }
@@ -132,7 +132,7 @@ class Parser implements vshaxeDebug.IParser {
     }
 
     public function isExitMatched(rawInput:String):Bool {
-        var exitR = ~/\[UnloadSWF\]/;        
+        var exitR = ~/\[UnloadSWF\]/;
         return (exitR.match(rawInput));
     }
 
@@ -170,7 +170,7 @@ class Parser implements vshaxeDebug.IParser {
                 var name = StringTools.trim(rVar.matched(1));
                 var value = rVar.matched(2);
                 var type = detectExpressionType(value);
-               
+
                 result.push({
                     name: name,
                     type: type,
@@ -186,7 +186,7 @@ class Parser implements vshaxeDebug.IParser {
         var rObjectType = ~/^\[Object (\d+),/;
         var rIntType = ~/^\d+ \(0\x\d+\)/;
         var rFloatType = ~/^\d+\.\d+$/;
-        var rStringType = ~/^[\\"].*[\\"]$/; 
+        var rStringType = ~/^[\\"].*[\\"]$/;
         var rBoolType = ~/^[t|f]\S+$/;
 
         return if (rObjectType.match(expr)) {

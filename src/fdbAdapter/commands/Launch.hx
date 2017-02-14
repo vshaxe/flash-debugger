@@ -5,25 +5,23 @@ import vshaxeDebug.commands.BaseCommand;
 import protocol.debug.Types;
 import vshaxeDebug.PathUtils;
 import js.node.Fs;
-import js.node.Buffer;
-import js.node.ChildProcess;
 
 class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 
     override public function execute() {
         var program = args.program;
         if (!PathUtils.isAbsolutePath(program)) {
-			if (!PathUtils.isOnPath(program)) {
+            if (!PathUtils.isOnPath(program)) {
                 context.sendError(response, 'Cannot find runtime $program on PATH.');
                 context.protocol.sendResponse(response);
-				return;
-			}
+                return;
+            }
         } 
         else if (!Fs.existsSync(program)) {
             response.success = false;
             response.message = 'Cannot find $program';
-			context.protocol.sendResponse(response);
-			return;
+            context.protocol.sendResponse(response);
+            return;
         }
         debugger.queueSend(cmd.launch(program), processResult);
         context.sendToOutput('running $program', OutputEventCategory.stdout);

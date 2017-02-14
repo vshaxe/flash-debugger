@@ -24,9 +24,9 @@ class Evaluate extends BaseCommand<EvaluateResponse, EvaluateArguments> {
                     case Object(id):
                         var vRef = context.variableHandles.create('object_$id');
                         response.body.variablesReference = vRef;
-                    default:    
+                    default:
                 }
-                response.body.result = v.value;        
+                response.body.result = v.value;
             default:
         }
         context.protocol.sendResponse(response);
@@ -38,7 +38,7 @@ class Evaluate extends BaseCommand<EvaluateResponse, EvaluateArguments> {
         var colonStarts = ~/^:.*/;
         if (dotStarts.match(raw)) {
             return 'this$raw';
-        } 
+        }
         else if (colonStarts.match(raw)) {
             return "";
         }

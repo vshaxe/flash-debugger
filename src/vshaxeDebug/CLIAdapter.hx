@@ -90,7 +90,7 @@ class CLIAdapter implements IDebugger {
     public function queueCommand(command:DebuggerCommand) {
         if (queueHead == null) {
             queueHead = queueTail = command;
-        } 
+        }
         else {
             queueTail.next = command;
             command.prev = queueTail;
@@ -98,12 +98,12 @@ class CLIAdapter implements IDebugger {
         }
         checkQueue();
     }
-    
+
     public function send(command:String) {
         trace('send to debugger cli: $command\n');
         proc.stdin.write('$command\n');
     }
-    
+
     function checkQueue() {
         if ((currentCommand == null) && (queueHead != null)) {
             currentCommand = queueHead;
@@ -112,7 +112,7 @@ class CLIAdapter implements IDebugger {
         }
     }
 
-    function executeCurrentCommand() {        
+    function executeCurrentCommand() {
         currentCommand.execute(this.send);
         if (currentCommand.done) {
             removeCurrentCommand();

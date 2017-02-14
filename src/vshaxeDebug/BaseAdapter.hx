@@ -6,12 +6,11 @@ import adapter.DebugSession.Thread as ThreadImpl;
 import adapter.DebugSession.Scope as ScopeImpl;
 import vshaxeDebug.Types;
 import vshaxeDebug.commands.BaseCommand;
-import js.node.Fs;
 import haxe.ds.Option;
 
 typedef AdapterDependencies = {
     function createContext(program:String):Context;
-    function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments>; 
+    function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments>;
     function getAttachCommand(context:Context, response:AttachResponse, args:ExtAttachRequestArguments):Option<BaseCommand<AttachResponse, ExtAttachRequestArguments>>;
 }
 
@@ -22,7 +21,7 @@ class BaseAdapter extends adapter.DebugSession {
     var cmd:ICommandBuilder;
     var parser:IParser;
     var deps:AdapterDependencies;
-   
+
     function new(deps:AdapterDependencies) {
         super();
         this.deps = deps;
@@ -51,7 +50,7 @@ class BaseAdapter extends adapter.DebugSession {
         debugger = context.debugger;
         parser = context.debugger.parser;
         cmd = context.debugger.commandBuilder;
-        if ((customArgs.receiveAdapterOutput != null) && 
+        if ((customArgs.receiveAdapterOutput != null) &&
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
@@ -65,7 +64,7 @@ class BaseAdapter extends adapter.DebugSession {
         debugger = context.debugger;
         parser = context.debugger.parser;
         cmd = context.debugger.commandBuilder;
-        if ((customArgs.receiveAdapterOutput != null) && 
+        if ((customArgs.receiveAdapterOutput != null) &&
             (customArgs.receiveAdapterOutput)) {
             redirectTraceToDebugConsole(context);
         }
@@ -123,14 +122,14 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
-        if (context == null) 
+        if (context == null)
             return this.sendResponse(response);
 
         switch (context.debuggerState) {
             case Stopped(_,_):
                 var command = new vshaxeDebug.commands.Evaluate(context, response, args);
                 command.execute();
-                
+
             default:
                 this.sendResponse(response);
         }
@@ -184,7 +183,7 @@ class BaseAdapter extends adapter.DebugSession {
                 else
                     trace('Start FAILED: [$lines]');
 
-            case EDebuggerState.Running:                
+            case EDebuggerState.Running:
                 if (parser.isStopOnBreakpointMatched(lines)) {
                     context.onEvent(Stop(StopReason.breakpoint));
                 }
@@ -192,14 +191,13 @@ class BaseAdapter extends adapter.DebugSession {
                     context.onEvent(Stop(StopReason.exception));
                 }
             case _:
-         
         }
     }
 
     function allOutputReceiver(string:String):Bool {
-        var procceed:Bool = false;
+        var proceed:Bool = false;
         if (parser.isExitMatched(string)) {
-            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}}; 
+            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}};
             sendEvent(exitedEvent);
             debugger.stop();
             return true;
@@ -210,11 +208,11 @@ class BaseAdapter extends adapter.DebugSession {
                 var lines:Array<String> = parser.getTraces(string);
                 for (line in lines) {
                     context.sendToOutput(line);
-                    procceed = true;
+                    proceed = true;
                 }
             default:
         }
-        return procceed;
+        return proceed;
     }
 
     function redirectTraceToDebugConsole(context:Context) {

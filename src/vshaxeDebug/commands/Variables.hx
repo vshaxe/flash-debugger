@@ -1,6 +1,5 @@
 package vshaxeDebug.commands;
 
-import vshaxeDebug.Context;
 import vshaxeDebug.Types;
 import protocol.debug.Types;
 import haxe.ds.Option;
@@ -9,7 +8,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
 
     var scope:EScope;
     var result:Array<Variable>;
-    
+
     override public function execute() {
         var id = args.variablesReference;
         var handleId:String = context.variableHandles.get(id);
@@ -17,10 +16,10 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
         result = [];
 
         var framesDiff:Int = getFramesDiff(scope);
-        
+
         var batch = new CommandsBatch(context.debugger, callback);
         if (framesDiff != 0) {
-            for (i in 0...Math.floor(Math.abs(framesDiff))) {   
+            for (i in 0...Math.floor(Math.abs(framesDiff))) {
                 if (framesDiff < 0)
                     batch.add(cmd.frameUp());
                 else
@@ -55,7 +54,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
             var varType:String =
             switch (item.type) {
                 case Object(id):
-                    vRef = context.variableHandles.create('object_$id');                        
+                    vRef = context.variableHandles.create('object_$id');
                     context.knownObjects.set(id, joinWithParent(item.name, parentName));
                     "Object";
                 case Simple(type):
@@ -66,7 +65,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
                 name: item.name,
                 type: varType,
                 value: item.value,
-                variablesReference: vRef 
+                variablesReference: vRef
             });
         }
         return true;
@@ -85,7 +84,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
                 Closure(Std.parseInt(parts[1]));
             case "object":
                 var objectId:Int = Std.parseInt(parts[1]);
-                var objectName:String = context.knownObjects.get(objectId); 
+                var objectName:String = context.knownObjects.get(objectId);
                 ObjectDetails(objectId, objectName);
             case _:
                 throw "could not recognize";

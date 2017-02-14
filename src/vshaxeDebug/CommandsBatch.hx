@@ -2,7 +2,7 @@ package vshaxeDebug;
 
 class CommandsBatch {
 
-    var waiting:Int; 
+    var waiting:Int;
     var got:Int;
     var callback:Void -> Void;
     var debugger:IDebugger;

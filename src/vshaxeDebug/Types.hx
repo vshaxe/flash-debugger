@@ -24,7 +24,7 @@ enum VariableType {
     Simple(type:String);
 }
 
-@:enum 
+@:enum
 abstract ScopeLocalsType(Int) {
     var NotSpecified = 1;
     var FunctionArguments = 2;
@@ -40,7 +40,7 @@ enum EScope {
 
 typedef ExtLaunchRequestArguments = {
    > LaunchRequestArguments,
-   var program:String;   
+   var program:String;
    @:optional var receiveAdapterOutput:Bool;
 }
 

@@ -14,7 +14,7 @@ class AutomatedTests
     @:keep public function setup() 
     {
        dc = new DebugClient('node', 'bin/adapter.js', 'node');
-	   var p = dc.start();
+       var p = dc.start();
     }
 
     public function testTerminated() 

@@ -1,6 +1,5 @@
 package vshaxeDebug.commands;
 
-import vshaxeDebug.Types;
 import protocol.debug.Types;
 
 class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {

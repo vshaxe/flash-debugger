@@ -1,9 +1,5 @@
 package vshaxeDebug;
 
-import protocol.debug.Types;
-import vshaxeDebug.Types;
-import haxe.ds.Option;
-
 interface ICommandBuilder {
 
     function launch(program:String):String;
