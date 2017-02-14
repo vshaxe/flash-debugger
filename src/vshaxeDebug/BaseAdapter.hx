@@ -123,11 +123,16 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function evaluateRequest(response:EvaluateResponse, args:EvaluateArguments) {
+        if (context == null) 
+            return this.sendResponse(response);
+
         switch (context.debuggerState) {
             case Stopped(_,_):
                 var command = new vshaxeDebug.commands.Evaluate(context, response, args);
                 command.execute();
+                
             default:
+                this.sendResponse(response);
         }
     }
 
