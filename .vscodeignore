@@ -1,0 +1,12 @@
+.vscode/**/*
+src/**/*
+vscode_debugadapter_haxe/**/*
+test/**/*
+bin/*.map
+bin/test.js
+.travis.yml
+.gitignore
+.gitmodules
+*.hxml
+fdb_log.txt
+node_modules/**/*.ts

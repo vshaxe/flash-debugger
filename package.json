@@ -35,7 +35,7 @@
 		"mocha": "^2.4.5"
 	},
 	"scripts": {
-		
+		"vscode:prepublish": "haxe build.hxml"
 	},
 	"contributes": {
 		"debuggers": [
