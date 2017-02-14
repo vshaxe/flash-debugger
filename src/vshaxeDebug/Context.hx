@@ -20,7 +20,7 @@ class Context {
     public var protocol(default, null):ProtocolServer;
     public var debuggerState(default, null):EDebuggerState;
     
-    public function new( protocol:ProtocolServer, debugger:IDebugger) {
+    public function new(protocol:ProtocolServer, debugger:IDebugger) {
         this.protocol = protocol;
         this.debugger = debugger;
 
@@ -41,7 +41,7 @@ class Context {
 
     public function sendError(response:Response<Dynamic>, message:String):Void {
         response.success = false;
-        response.message =  message;
+        response.message = message;
         protocol.sendResponse(response);
     }
 }

@@ -22,11 +22,11 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 
         var breakpoints = context.breakpoints.get(pathKey);
         var previouslySet = getAlreadySetMap(pathKey, context.breakpoints);
-        var batch = new CommandsBatch(context.debugger, commandDoneCallback.bind(pathKey, response ));
+        var batch = new CommandsBatch(context.debugger, commandDoneCallback.bind(pathKey, response));
 
         switch (context.debuggerState) {
             case EDebuggerState.Running:
-                batch.add(cmd.pause(), 
+                batch.add(cmd.pause(),
                 function(_):Bool {
                     return true;
                 });
