@@ -10,7 +10,9 @@
 				"--extensionDevelopmentPath=${workspaceRoot}"
 			],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/bin"
+			"outFiles": [
+				"${workspaceRoot}/bin/*.js"
+			]
 		},
 		{
 			"name": "Run Server",
@@ -21,7 +23,9 @@
 			"stopOnEntry": false,
 			"args": [ "--server=4711" ],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/bin",
+			"outFiles": [
+				"${workspaceRoot}/bin/*.js"
+			],
 			"cwd": "${workspaceRoot}"
 		},
 		{
@@ -37,7 +41,9 @@
 				"./out/tests/"
 			],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out",
+			"outFiles": [
+				"${workspaceRoot}/bin/*.js"
+			],
 			"cwd": "${workspaceRoot}"
 		},
 		{
