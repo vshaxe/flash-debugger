@@ -10,7 +10,8 @@ class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {
     }
 
     function processResult(lines:Array<String>):Bool {
-        var frames = parser.parseStackTrace(lines, context.fileNameToFullPathDict.get);
+        var pathProvider:String->String = context.fileNameToFullPathDict.get;
+        var frames = parser.parseStackTrace(lines, pathProvider);
         response.body = {
             stackFrames : frames
         };
