@@ -10,7 +10,6 @@ class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {
     }
 
     function processResult(lines:Array<String>):Bool {
-        var pathProvider:String->String = context.fileNameToFullPathDict.get;
         var frames = parser.parseStackTrace(lines, pathProvider);
         response.body = {
             stackFrames : frames
@@ -18,5 +17,9 @@ class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {
         context.onEvent(SetFrames(frames));
         context.protocol.sendResponse(response);
         return true;
+    }
+
+    function pathProvider(fileName:String):String {
+        return context.fileNameToFullPathDict.get(fileName);
     }
 }
