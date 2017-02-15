@@ -21,6 +21,7 @@ class BaseAdapter extends adapter.DebugSession {
     var cmd:ICommandBuilder;
     var parser:IParser;
     var deps:AdapterDependencies;
+    var terminated:Bool = false;
 
     function new(deps:AdapterDependencies) {
         super();
@@ -166,6 +167,10 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {
+        if (terminated) {
+            sendResponse(response);
+            return;
+        }
         debugger.queueSend(cmd.disconnect(), function(_):Bool {
             sendResponse(response);
             return true;
@@ -195,9 +200,10 @@ class BaseAdapter extends adapter.DebugSession {
     function allOutputReceiver(string:String):Bool {
         var proceed:Bool = false;
         if (parser.isExitMatched(string)) {
-            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : {exitCode:0}};
-            traceJson(exitedEvent);
-            sendEvent(exitedEvent);
+            var event = new TerminatedEvent(false);
+            traceJson(event);
+            sendEvent(event);
+            terminated = true;
             debugger.stop();
             return true;
         }
