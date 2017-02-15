@@ -33,10 +33,6 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
             default:
         }
 
-        if (Lambda.count(context.fileNameToFullPathDict) == 0) {
-            batch.add(cmd.showFiles(), onShowFiles);
-        }
-
         for (b in args.breakpoints) {
             if (previouslySet.exists(b.line)) {
                 previouslySet.remove(b.line);
@@ -59,14 +55,6 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
             default:
         }
         batch.checkIsDone();
-    }
-
-    function onShowFiles(lines:Array<String>):Bool {
-         var sources:Array<SourceInfo> = parser.parseShowFiles(lines);
-        for (source in sources) {
-            context.fileNameToFullPathDict.set(source.name, source.path);
-        }
-        return true;
     }
 
     function onBreakpointAdded(breakpoint:Breakpoint, container:Array<Breakpoint>, lines:Array<String>):Bool {
