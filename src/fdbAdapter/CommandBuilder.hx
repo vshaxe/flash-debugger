@@ -58,6 +58,6 @@ class CommandBuilder implements vshaxeDebug.ICommandBuilder {
     public function evaluate(expr:String):String
         return 'print $expr';
 
-    public function stop():String
+    public function disconnect():String
         return "kill\ny\nquit";
 }
