@@ -1,11 +1,11 @@
 # Haxe Debug
-[![Build Status](https://travis-ci.org/vshaxe/vshaxe-debugadapter.svg?branch=master)](https://travis-ci.org/vshaxe/vshaxe-debugadapter)
+[![Build Status](https://travis-ci.org/vshaxe/vshaxe-debugadapter.svg?branch=master)](https://travis-ci.org/vshaxe/vshaxe-debugadapter) [![Version](http://vsmarketplacebadge.apphb.com/version-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug) [![Installs](http://vsmarketplacebadge.apphb.com/installs-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug)
 
 This is an extension for debugging Haxe applications on the Flash target via [FDB][1]. It is best used with the [vshaxe][2] extension.
 
 Support for the C++ target via [hxcpp-debugger][3] is planned.
 
-![](images/example.png)
+![Example](images/example.png)
 
 ## Usage
 
@@ -31,7 +31,7 @@ Replace `/bin/application.swf` with the path to your swf file.
 
 You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
 
-![](images/add_configuration.png)
+![Add Configuration](images/add_configuration.png)
 
 ## Installing from source
 1. Navigate to the extensions folder (`C:\Users\<username>\.vscode\extensions` on Windows, `~/.vscode/extensions` otherwise)
