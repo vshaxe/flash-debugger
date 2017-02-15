@@ -1,3 +1,7 @@
+### 1.0.2 (February 15, 2017)
+
+- fixed a "file not found" error when pausing on exceptions
+
 ### 1.0.1 (February 15, 2017)
 
 - attempt to fix Readme images not being displayed
