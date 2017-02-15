@@ -28,7 +28,7 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function dispatchRequest(request:Request<Dynamic>) {
-        trace( haxe.Json.stringify(request) );
+        traceJson(request);
         super.dispatchRequest(request);
     }
 
@@ -41,7 +41,7 @@ class BaseAdapter extends adapter.DebugSession {
         response.body.supportsConfigurationDoneRequest = true;
         response.body.supportsEvaluateForHovers = true;
         response.body.supportsStepBack = false;
-        this.sendResponse( response );
+        this.sendResponse(response);
     }
 
     override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
@@ -195,7 +195,8 @@ class BaseAdapter extends adapter.DebugSession {
     function allOutputReceiver(string:String):Bool {
         var proceed:Bool = false;
         if (parser.isExitMatched(string)) {
-            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : { exitCode:0}};
+            var exitedEvent:ExitedEvent = {type:MessageType.event, event:"exited", seq:0, body : {exitCode:0}};
+            traceJson(exitedEvent);
             sendEvent(exitedEvent);
             debugger.stop();
             return true;
@@ -211,6 +212,10 @@ class BaseAdapter extends adapter.DebugSession {
             default:
         }
         return proceed;
+    }
+
+    function traceJson<T>(value:T) {
+        trace(haxe.Json.stringify(value));
     }
 
     function redirectTraceToDebugConsole(context:Context) {

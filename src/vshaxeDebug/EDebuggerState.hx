@@ -29,7 +29,7 @@ class StateController {
 
         return switch [currentState, event] {
             case [WaitingGreeting, GreetingReceived]:
-                protocol.sendEvent( new InitializedEvent());
+                protocol.sendEvent(new InitializedEvent());
                 Configuring;
 
             case [Configuring | Stopped(_, _), Continue]:
