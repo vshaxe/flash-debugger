@@ -166,8 +166,10 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {
-        debugger.stop();
-        sendResponse(response);
+        debugger.queueSend(cmd.stop(), function(_):Bool {
+            sendResponse(response);
+            return true;
+        });
     }
 
     function onPromptGot(lines:Array<String>) {

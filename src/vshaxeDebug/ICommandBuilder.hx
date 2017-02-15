@@ -20,4 +20,5 @@ interface ICommandBuilder {
     function printMembers():String;
     function evaluate(expr:String):String;
     function showFiles():String;
+    function stop():String;
 }
