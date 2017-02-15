@@ -7,7 +7,7 @@ This is an extension for debugging Haxe applications on the Flash target via [FD
 
 Support for the C++ target via [hxcpp-debugger][3] is planned.
 
-![](images/example.png)
+![Example](images/example.png)
 
 ## Usage
 
@@ -33,7 +33,7 @@ Replace `/bin/application.swf` with the path to your swf file.
 
 You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
 
-![](images/add_configuration.png)
+![Add Configuration](images/add_configuration.png)
 
 ## Installing from source
 1. Navigate to the extensions folder (`C:\Users\<username>\.vscode\extensions` on Windows, `~/.vscode/extensions` otherwise)
