@@ -66,6 +66,9 @@ class Adapter extends BaseAdapter {
             cmd:resolveJavaPath(),
             cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
             onPromptGot:onPromptGot,
+            onError: function(error) {
+                return "Could not start fdb. Make sure that PATH contains the Java executable or JAVA_HOME is set correctly.";
+            },
             allOutputReceiver:allOutputReceiver,
             commandBuilder : commandBuilder,
             parser : parser

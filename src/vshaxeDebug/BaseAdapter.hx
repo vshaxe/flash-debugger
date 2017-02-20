@@ -163,7 +163,7 @@ class BaseAdapter extends adapter.DebugSession {
     }
 
     override function pauseRequest(response:PauseResponse, args:PauseArguments) {
-        context.sendError(response,"Haxe Debug does not support pause requests for now");
+        context.sendError(response, "Haxe Debug does not support pause requests for now");
     }
 
     override function disconnectRequest(response:DisconnectResponse, args:DisconnectArguments) {

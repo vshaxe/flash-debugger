@@ -1,5 +1,6 @@
 package vshaxeDebug;
 
+import js.Error;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable.ReadableEvent;
@@ -9,6 +10,7 @@ typedef CLIAdapterConfig = {
     var cmdParams:Array<String>;
     var cmd:String;
     var onPromptGot:Array<String> -> Void;
+    var onError:Error -> String;
     var allOutputReceiver:String -> Bool;
     var commandBuilder:ICommandBuilder;
     var parser:IParser;
@@ -51,6 +53,7 @@ class CLIAdapter implements IDebugger {
 
     var config:CLIAdapterConfig;
     var onPromptGot:Array<String> -> Void;
+    var onError:Error -> String;
     var allOutputReceiver:String -> Bool;
     var proc:ChildProcessObject;
     var buffer:Buffer;
@@ -66,6 +69,7 @@ class CLIAdapter implements IDebugger {
     public function new(config:CLIAdapterConfig) {
         this.config = config;
         this.onPromptGot = config.onPromptGot;
+        this.onError = config.onError;
         this.allOutputReceiver = config.allOutputReceiver;
         this.commandBuilder = config.commandBuilder;
         this.parser = config.parser;
@@ -74,7 +78,7 @@ class CLIAdapter implements IDebugger {
 
     public function start() {
         proc = ChildProcess.spawn(config.cmd, config.cmdParams, {env: {}});
-        proc.stdout.on(ReadableEvent.Data,  onData );
+        proc.stdout.on(ReadableEvent.Data, onData);
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
     }
 
@@ -101,7 +105,11 @@ class CLIAdapter implements IDebugger {
 
     public function send(command:String) {
         trace('send to debugger cli: $command\n');
-        proc.stdin.write('$command\n');
+        try {
+            proc.stdin.write('$command\n');
+        } catch (e:Error) {
+            throw onError(e);
+        }
     }
 
     function checkQueue() {
