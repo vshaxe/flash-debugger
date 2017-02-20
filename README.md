@@ -9,7 +9,7 @@ Support for the C++ target via [hxcpp-debugger][3] is planned.
 
 ## Usage
 
-Swf files have to be compiled using the `-D fdb` define. Additionally, `java` needs to be in your `PATH` (to run `fdb.jar`).
+Swf files have to be compiled using the `-D fdb` define. Additionally, you need to have `JAVA_HOME` defined or have `java` available in your `PATH` (to run `fdb.jar`).
 
 The `launch.json` should look something like this:
 

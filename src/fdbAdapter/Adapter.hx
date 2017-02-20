@@ -12,6 +12,7 @@ import protocol.debug.Types;
 import adapter.DebugSession;
 import js.node.Fs;
 import haxe.ds.Option;
+import haxe.io.Path;
 
 class Adapter extends BaseAdapter {
 
@@ -62,7 +63,7 @@ class Adapter extends BaseAdapter {
         var eolSign = PlatformParameters.getEndOfLineSign();
         var parser:IParser = new Parser(eolSign);
         var cliAdapterConfig = {
-            cmd:"java",
+            cmd:resolveJavaPath(),
             cmdParams:["-Duser.language=en", "-jar", '$scriptPath/../fdb/fdb.jar'],
             onPromptGot:onPromptGot,
             allOutputReceiver:allOutputReceiver,
@@ -73,5 +74,14 @@ class Adapter extends BaseAdapter {
         debugger = new CLIAdapter(cliAdapterConfig);
         debugger.start();
         return new Context(this, debugger);
+    }
+
+    function resolveJavaPath():String {
+        var path = "java";
+        var javaHome = Sys.getEnv("JAVA_HOME");
+        if (javaHome != null) {
+            path = Path.join([javaHome, "java"]);
+        }
+        return path;
     }
 }

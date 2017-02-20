@@ -1,3 +1,9 @@
+### 1.1.0 (to be released)
+
+**Changes and improvements**:
+
+- `JAVA_HOME` is now used if defined
+
 ### 1.0.2 (February 15, 2017)
 
 - fixed a "file not found" error when pausing on exceptions
