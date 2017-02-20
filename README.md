@@ -9,7 +9,10 @@ Support for the C++ target via [hxcpp-debugger][3] is planned.
 
 ## Usage
 
-Swf files have to be compiled using the `-D fdb` define. Additionally, you need to have `JAVA_HOME` defined or have `java` available in your `PATH` (to run `fdb.jar`).
+Swf files have to be compiled using the `-D fdb` define. Additionally, you need to have `JAVA_HOME` defined or have `java` available in your `PATH` (to run `fdb.jar`). Please refer to these links for instructions:
+
+- [Setting `JAVA_HOME` on Windows][4]
+- [Setting `JAVA_HOME` on Linux][5]
 
 The `launch.json` should look something like this:
 
@@ -43,3 +46,5 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
    [1]: http://help.adobe.com/en_US/flex/using/WS2db454920e96a9e51e63e3d11c0bf69084-7ffb.html
    [2]: https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe
    [3]: https://github.com/HaxeFoundation/hxcpp-debugger
+   [4]: http://stackoverflow.com/a/6521412/2631715
+   [5]: http://askubuntu.com/a/175547/463815
