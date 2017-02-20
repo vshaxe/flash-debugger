@@ -80,7 +80,7 @@ class Adapter extends BaseAdapter {
         var path = "java";
         var javaHome = Sys.getEnv("JAVA_HOME");
         if (javaHome != null) {
-            path = Path.join([javaHome, "java"]);
+            path = Path.join([javaHome, "bin/java"]);
         }
         return path;
     }
