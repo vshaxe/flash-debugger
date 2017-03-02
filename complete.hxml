@@ -1,4 +1,4 @@
--cp vscode_debugadapter_haxe
+-cp vscode-debugadapter-extern
 -cp src
 -cp test
 -lib utest
