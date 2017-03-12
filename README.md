@@ -9,12 +9,17 @@ Support for the C++ target via [hxcpp-debugger][3] is planned.
 
 ## Usage
 
-Swf files have to be compiled using the `-D fdb` define. Additionally, you need to have `JAVA_HOME` defined or have `java` available in your `PATH` (to run `fdb.jar`). Please refer to these links for instructions:
+There's three prerequisites:
 
-- [Setting `JAVA_HOME` on Windows][4]
-- [Setting `JAVA_HOME` on Linux][5]
+1. Download the "Flash Player projector content debugger" from [here][6] and associate it with `.swf` files.
+2. Make sure `JAVA_HOME` is defined **or** you have `java` in your `PATH` (to run `fdb.jar`). Please refer to these links for instructions:
 
-The `launch.json` should look something like this:
+   - [Setting `JAVA_HOME` on Windows][4]
+   - [Setting `JAVA_HOME` on Linux][5]
+
+3. Compile the `.swf` file you want to debug with the `-D fdb` define.
+
+After this, you need a launch configuration. The `launch.json` should look something like this:
 
 ```json
 { 
@@ -48,3 +53,4 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
    [3]: https://github.com/HaxeFoundation/hxcpp-debugger
    [4]: http://stackoverflow.com/a/6521412/2631715
    [5]: http://askubuntu.com/a/175547/463815
+   [6]: http://www.adobe.com/support/flashplayer/debug_downloads.html
