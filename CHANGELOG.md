@@ -1,4 +1,4 @@
-### 1.1.0 (to be released)
+### 1.1.0 (March 12, 2017)
 
 - added support for pause requests ([#6](https://github.com/vshaxe/vshaxe-debugadapter/issues/6))
 
