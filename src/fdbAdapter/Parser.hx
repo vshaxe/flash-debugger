@@ -42,35 +42,42 @@ class Parser implements vshaxeDebug.IParser {
     }
 
     public function parseStackTrace(lines:Array<String>, pathProvider:String -> String):Array<StackFrame> {
-        var result = [];
+        function maybeAddSource(frame:StackFrame, name:String) {
+            if (name != "<null>") {
+                frame.source = { name : name, path : pathProvider(name)};
+            }
+        }
+
+        var result:Array<StackFrame> = [];
         var rMethod = ~/#([0-9]+)\s+this = \[Object [0-9]+, class='(.+)'\]\.(.+)\(.*\) at (.*):([0-9]+).*/;
         var anonFunction = ~/#([0-9]+)\s+this = \[Function [0-9]+, name='(.*)'\]\.([a-zA-Z0-9\/\$<>]+).*\) at (.*):([0-9]+).*/;
         var globalCall = ~/#([0-9]+)\s+(.*)\(\) at (.*):([0-9]+)/;
         for (l in lines) {
             if (rMethod.match(l)) {
-                result.push({
+                var frame = {
                     id : Std.parseInt(rMethod.matched(1)),
                     name : rMethod.matched(2) + "." + rMethod.matched(3),
                     line : Std.parseInt( rMethod.matched(5)),
-                    source : { name : rMethod.matched(4), path : pathProvider(rMethod.matched(4))},
                     column : 0
-                });
+                };
+                maybeAddSource(frame, rMethod.matched(4));
+                result.push(frame);
             }
             else if (anonFunction.match(l)) {
-                result.push({
+                var frame = {
                     id : Std.parseInt(anonFunction.matched(1)),
                     name : anonFunction.matched(2) + "." + anonFunction.matched(3),
                     line : Std.parseInt( anonFunction.matched(5)),
-                    source : { name : anonFunction.matched(4), path : pathProvider(anonFunction.matched(4))},
                     column : 0
-                });
+                };
+                maybeAddSource(frame, anonFunction.matched(4));
+                result.push(frame);
             }
             else if (globalCall.match(l)) {
                 result.push({
                     id : Std.parseInt(globalCall.matched(1)),
                     name : globalCall.matched(2),
                     line : Std.parseInt( globalCall.matched(4)),
-                    source : { path : "global", name: "global"},
                     column : 0
                 });
             }

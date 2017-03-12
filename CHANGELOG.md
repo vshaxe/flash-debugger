@@ -1,3 +1,7 @@
+### 1.1.0 (to be released)
+
+- added support for pause requests ([#6](https://github.com/vshaxe/vshaxe-debugadapter/issues/6))
+
 ### 1.0.3 (February 20, 2017)
 
 - `JAVA_HOME` is now used if defined
