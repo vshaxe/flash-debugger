@@ -1,7 +1,7 @@
 {
     "name": "haxe-debug",
     "displayName": "Haxe Debug",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "publisher": "vshaxe",
     "license": "MIT",
     "description": "Debugger for Haxe",

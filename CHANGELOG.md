@@ -1,3 +1,7 @@
+### 1.1.1 (March 19, 2017)
+
+- fixed fdb being started with an empty environment (could cause issues on Linux)
+
 ### 1.1.0 (March 12, 2017)
 
 - added support for pause requests ([#6](https://github.com/vshaxe/vshaxe-debugadapter/issues/6))
