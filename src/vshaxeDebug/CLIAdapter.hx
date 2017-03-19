@@ -77,7 +77,11 @@ class CLIAdapter implements IDebugger {
     }
 
     public function start() {
-        proc = ChildProcess.spawn(config.cmd, config.cmdParams, {env: {}});
+        var env = {};
+        for (k in Sys.environment().keys()) {
+            Reflect.setField(env, k, Sys.getEnv(k));
+        }
+        proc = ChildProcess.spawn(config.cmd, config.cmdParams, {env: env});
         proc.stdout.on(ReadableEvent.Data, onData);
         proc.stderr.on(ReadableEvent.Data, function(buf:Buffer) {trace(buf.toString());});
     }
