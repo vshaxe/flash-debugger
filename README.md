@@ -12,6 +12,7 @@ Support for the C++ target via [hxcpp-debugger][3] is planned.
 There's three prerequisites:
 
 1. Download the "Flash Player projector content debugger" from [here][6] and associate it with `.swf` files.
+   In Linux, make sure the player's executable is accessible globally (for example, in the /usr/bin/ directory or in the PATH) and its name is no other than flashplayer (you could [make a symlink][7] to the original file).
 2. Make sure `JAVA_HOME` is defined **or** you have `java` in your `PATH` (to run `fdb.jar`). Please refer to these links for instructions:
 
    - [Setting `JAVA_HOME` on Windows][4]
@@ -54,3 +55,4 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
    [4]: http://stackoverflow.com/a/6521412/2631715
    [5]: http://askubuntu.com/a/175547/463815
    [6]: http://www.adobe.com/support/flashplayer/debug_downloads.html
+   [7]: http://stackoverflow.com/questions/1951742/how-to-symlink-a-file-in-linux#answer-1951752
