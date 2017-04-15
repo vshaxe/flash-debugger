@@ -1,3 +1,7 @@
+### 1.1.2 (April 15, 2017)
+
+- fixed setting breakpoints with VSCode 1.11.x ([#12](https://github.com/vshaxe/vshaxe-debugadapter/issues/12))
+
 ### 1.1.1 (March 19, 2017)
 
 - fixed fdb being started with an empty environment (could cause issues on Linux)
