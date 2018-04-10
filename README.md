@@ -43,9 +43,16 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
 
 ## Installing from source
 1. Navigate to the extensions folder (`C:\Users\<username>\.vscode\extensions` on Windows, `~/.vscode/extensions` otherwise)
-2. Recursively clone this repo: `git clone --recursive https://github.com/vshaxe/flash-debugger`
+2. Clone this repo: `git clone https://github.com/vshaxe/flash-debugger`
 3. Change current directory to the cloned one: `cd flash-debugger`.
-4. Do `npm install`
+4. Install dependencies:
+
+    ```hxml
+    npm install
+    haxelib install hxnodejs
+    haxelib git vscode-debugadapter https://github.com/vshaxe/vscode-debugadapter-extern
+    ```
+
 5. Do `haxe build.hxml`
 
    [1]: http://help.adobe.com/en_US/flex/using/WS2db454920e96a9e51e63e3d11c0bf69084-7ffb.html

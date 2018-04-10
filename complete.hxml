@@ -1,5 +1,5 @@
--cp vscode-debugadapter-extern
 -cp src
 -cp test
 -lib utest
 -lib hxnodejs
+-lib vscode-debugadapter

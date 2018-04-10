@@ -1,46 +1,16 @@
 language: haxe
 
-# TravisCI by default run on linux.
-# Let's enable both linux and mac builds because why not?
-os:
-  - linux
-
-# Test with Haxe 3.2.1 and Haxe development.
 haxe:
   - "3.2.1"
   - development
 
-matrix:
-  # Allow Haxe development to fail.
-  allow_failures:
-    - haxe: development
-
-addons:
-  # This is the preferred way to install apt packages.
-  # However, it only allow some but not all packages.
-  # Alternatively, we can use `sudo apt-get install ...` in the `install:` section.
-  # http://docs.travis-ci.com/user/apt/#Adding-APT-Packages
-  apt:
-    packages:
-      
 node_js:
   - "4.1"
 
 install:
-  # os-specific config
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      export DISPLAY=:99.0;
-      export AUDIODEV=null;
-    fi
-  # check version
-  - node -v
-
-  # Install npm
   - npm install
-  
-  # Install haxelibs
-  - haxelib install -always build.hxml
-  - haxelib list
+  - haxelib git vscode-debugadapter https://github.com/vshaxe/vscode-debugadapter-extern
+  - haxelib install hxnodejs
 
 script:
-  - haxe build.hxml              #&& node bin/test.js
+  - haxe build.hxml

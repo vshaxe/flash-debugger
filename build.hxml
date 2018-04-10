@@ -1,13 +1,12 @@
--cp vscode-debugadapter-extern
 -cp src
 -main fdbAdapter.Adapter
+-lib vscode-debugadapter
 -lib hxnodejs
 -js bin/fdb_adapter.js
 
 --next 
 -lib utest
 -main test.TestAll
--cp vscode-debugadapter-extern
 -cp .
 -js bin/test.js
 
