@@ -1,3 +1,7 @@
+### 1.2.0 (April 10, 2018)
+
+- rebranded the extension as "Flash Debugger"
+
 ### 1.1.2 (April 15, 2017)
 
 - fixed setting breakpoints with VSCode 1.11.x ([#12](https://github.com/vshaxe/flash-debugger/issues/12))
