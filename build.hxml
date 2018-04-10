@@ -6,6 +6,7 @@
 
 --next 
 -lib utest
+-lib vscode-debugadapter
 -main test.TestAll
 -cp .
 -js bin/test.js
