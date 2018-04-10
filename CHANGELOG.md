@@ -1,6 +1,6 @@
 ### 1.1.2 (April 15, 2017)
 
-- fixed setting breakpoints with VSCode 1.11.x ([#12](https://github.com/vshaxe/vshaxe-debugadapter/issues/12))
+- fixed setting breakpoints with VSCode 1.11.x ([#12](https://github.com/vshaxe/flash-debugger/issues/12))
 
 ### 1.1.1 (March 19, 2017)
 
@@ -8,7 +8,7 @@
 
 ### 1.1.0 (March 12, 2017)
 
-- added support for pause requests ([#6](https://github.com/vshaxe/vshaxe-debugadapter/issues/6))
+- added support for pause requests ([#6](https://github.com/vshaxe/flash-debugger/issues/6))
 
 ### 1.0.3 (February 20, 2017)
 

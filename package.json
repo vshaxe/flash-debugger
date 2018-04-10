@@ -1,35 +1,35 @@
 {
     "name": "haxe-debug",
-    "displayName": "Haxe Debug",
+    "displayName": "Flash Debugger",
     "version": "1.1.2",
     "publisher": "vshaxe",
     "license": "MIT",
-    "description": "Debugger for Haxe",
+    "description": "Debugger for Haxe/Flash applications",
     "author": {
         "name": "vshaxe"
     },
     "engines": {
         "vscode": "^1.4.0"
     },
-    "icon": "images/icon.svg",
+    "icon": "images/flash-logo.png",
     "categories": [
         "Debuggers"
     ],
     "galleryBanner": {
         "theme": "dark",
-        "color": "#A84B38"
+        "color": "#d31a20"
     },
     "keywords": [
         "haxe",
-        "flash"
+        "flash",
+        "swf"
     ],
-    "private": true,
     "repository": {
         "type": "git",
-        "url": "https://github.com/vshaxe/vshaxe-debugadapter.git"
+        "url": "https://github.com/vshaxe/flash-debugger.git"
     },
     "bugs": {
-        "url": "https://github.com/vshaxe/vshaxe-debugadapter/issues"
+        "url": "https://github.com/vshaxe/flash-debugger/issues"
     },
     "dependencies": {
         "vscode-debugprotocol": "1.8.0-pre.3",
