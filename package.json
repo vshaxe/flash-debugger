@@ -46,7 +46,7 @@
         "debuggers": [
             {
                 "type": "fdb",
-                "label": "Haxe (Flash)",
+                "label": "Flash",
                 "enableBreakpointsFor": {
                     "languageIds": [
                         "haxe"
