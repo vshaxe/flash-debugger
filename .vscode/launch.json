@@ -15,13 +15,17 @@
 			]
 		},
 		{
-			"name": "Run Server",
+			"name": "Run Adapter",
 			"type": "node",
 			"request": "launch",
-			"runtimeArgs": [ "--nolazy" ],
+			"runtimeArgs": [
+				"--nolazy"
+			],
 			"program": "${workspaceRoot}/bin/fdb_adapter.js",
 			"stopOnEntry": false,
-			"args": [ "--server=4711" ],
+			"args": [
+				"--server=4711"
+			],
 			"sourceMaps": true,
 			"outFiles": [
 				"${workspaceRoot}/bin/*.js"
@@ -33,10 +37,14 @@
 			"type": "node",
 			"request": "launch",
 			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-			"runtimeArgs": [ "--nolazy" ],
+			"runtimeArgs": [
+				"--nolazy"
+			],
 			"args": [
-				"-u", "tdd",
-				"--timeout", "999999",
+				"-u",
+				"tdd",
+				"--timeout",
+				"999999",
 				"--colors",
 				"./out/tests/"
 			],
@@ -45,13 +53,6 @@
 				"${workspaceRoot}/bin/*.js"
 			],
 			"cwd": "${workspaceRoot}"
-		},
-		{
-			"name": "Run Mock Sample",
-			"type": "fdb",
-			"request": "launch",
-			"program": "${workspaceRoot}/README.md",
-			"stopOnEntry": true
 		}
 	]
 }
