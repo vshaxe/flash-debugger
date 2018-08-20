@@ -1,102 +1,102 @@
 {
-    "name": "haxe-debug",
-    "displayName": "Flash Debugger",
-    "version": "1.2.0",
-    "publisher": "vshaxe",
-    "license": "MIT",
-    "description": "Debugger for Haxe/Flash applications",
-    "author": {
-        "name": "vshaxe"
-    },
-    "engines": {
-        "vscode": "^1.4.0"
-    },
-    "icon": "images/flash-logo.png",
-    "categories": [
-        "Debuggers"
-    ],
-    "galleryBanner": {
-        "theme": "dark",
-        "color": "#d31a20"
-    },
-    "keywords": [
-        "haxe",
-        "flash",
-        "swf"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/vshaxe/flash-debugger.git"
-    },
-    "bugs": {
-        "url": "https://github.com/vshaxe/flash-debugger/issues"
-    },
-    "dependencies": {
-        "vscode-debugprotocol": "1.8.0-pre.3",
-        "vscode-debugadapter": "1.8.0-pre.4"
-    },
-    "scripts": {
-        "vscode:prepublish": "haxe build.hxml"
-    },
-    "contributes": {
-        "debuggers": [
-            {
-                "type": "fdb",
-                "label": "Flash",
-                "enableBreakpointsFor": {
-                    "languageIds": [
-                        "haxe"
-                    ]
-                },
-                "program": "./bin/fdb_adapter.js",
-                "runtime": "node",
-                "configurationAttributes": {
-                    "launch": {
-                        "required": [
-                            "program"
-                        ],
-                        "properties": {
-                            "program": {
-                                "type": "string",
-                                "description": "full path to a swf file.",
-                                "default": "${workspaceRoot}/bin/your.swf"
-                            },
-                            "request": {
-                                "type": "string",
-                                "description": "launch",
-                                "default": "launch"
-                            },
-                            "receiveAdapterOutput": {
-                                "type": "bool",
-                                "description": "redirect adapter log to debug console",
-                                "default": false
-                            }
-                        }
-                    },
-                    "attach": {
-                        "properties": {
-                            "request": {
-                                "type": "string",
-                                "description": "Attaches to a swf which is launched manually",
-                                "default": "attach"
-                            },
-                            "receiveAdapterOutput": {
-                                "type": "bool",
-                                "description": "redirect adapter log to debug console",
-                                "default": false
-                            }
-                        }
-                    }
-                },
-                "initialConfigurations": [
-                    {
-                        "name": "Flash",
-                        "type": "fdb",
-                        "request": "launch",
-                        "program": "${workspaceRoot}/bin/your.swf"
-                    }
-                ]
-            }
-        ]
-    }
+	"name": "haxe-debug",
+	"displayName": "Flash Debugger",
+	"version": "1.2.0",
+	"publisher": "vshaxe",
+	"license": "MIT",
+	"description": "Debugger for Haxe/Flash applications",
+	"author": {
+		"name": "vshaxe"
+	},
+	"engines": {
+		"vscode": "^1.4.0"
+	},
+	"icon": "images/flash-logo.png",
+	"categories": [
+		"Debuggers"
+	],
+	"galleryBanner": {
+		"theme": "dark",
+		"color": "#d31a20"
+	},
+	"keywords": [
+		"haxe",
+		"flash",
+		"swf"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vshaxe/flash-debugger.git"
+	},
+	"bugs": {
+		"url": "https://github.com/vshaxe/flash-debugger/issues"
+	},
+	"dependencies": {
+		"vscode-debugprotocol": "1.8.0-pre.3",
+		"vscode-debugadapter": "1.8.0-pre.4"
+	},
+	"scripts": {
+		"vscode:prepublish": "haxe build.hxml"
+	},
+	"contributes": {
+		"debuggers": [
+			{
+				"type": "fdb",
+				"label": "Flash",
+				"enableBreakpointsFor": {
+					"languageIds": [
+						"haxe"
+					]
+				},
+				"program": "./bin/fdb_adapter.js",
+				"runtime": "node",
+				"configurationAttributes": {
+					"launch": {
+						"required": [
+							"program"
+						],
+						"properties": {
+							"program": {
+								"type": "string",
+								"description": "full path to a swf file.",
+								"default": "${workspaceRoot}/bin/your.swf"
+							},
+							"request": {
+								"type": "string",
+								"description": "launch",
+								"default": "launch"
+							},
+							"receiveAdapterOutput": {
+								"type": "bool",
+								"description": "redirect adapter log to debug console",
+								"default": false
+							}
+						}
+					},
+					"attach": {
+						"properties": {
+							"request": {
+								"type": "string",
+								"description": "Attaches to a swf which is launched manually",
+								"default": "attach"
+							},
+							"receiveAdapterOutput": {
+								"type": "bool",
+								"description": "redirect adapter log to debug console",
+								"default": false
+							}
+						}
+					}
+				},
+				"initialConfigurations": [
+					{
+						"name": "Flash",
+						"type": "fdb",
+						"request": "launch",
+						"program": "${workspaceRoot}/bin/your.swf"
+					}
+				]
+			}
+		]
+	}
 }

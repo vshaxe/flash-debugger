@@ -5,11 +5,10 @@ import vshaxeDebug.Types;
 import protocol.debug.Types;
 
 class Attach extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
-
-    override public function execute() {
-        debugger.queueSend("run", function(_):Bool {
-            return true;
-        });
-        context.sendToOutput("waiting..", OutputEventCategory.stdout);
-    }
+	override public function execute() {
+		debugger.queueSend("run", function(_):Bool {
+			return true;
+		});
+		context.sendToOutput("waiting..", OutputEventCategory.stdout);
+	}
 }
