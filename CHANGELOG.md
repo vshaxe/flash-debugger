@@ -1,3 +1,7 @@
+### 1.2.1 (February 4, 2019)
+
+- fixed launch not working in some cases with spaces in program path ([#17](https://github.com/vshaxe/flash-debugger/issues/17))
+
 ### 1.2.0 (April 10, 2018)
 
 - rebranded the extension as "Flash Debugger"
