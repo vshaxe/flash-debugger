@@ -1,14 +1,9 @@
 language: haxe
 
 haxe:
-  - "3.2.1"
   - development
 
-node_js:
-  - "4.1"
-
 install:
-  - npm install
   - haxelib git vscode-debugadapter https://github.com/vshaxe/vscode-debugadapter-extern
   - haxelib install hxnodejs
   - haxelib install utest
