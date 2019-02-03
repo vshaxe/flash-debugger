@@ -3,8 +3,8 @@ package fdbAdapter;
 class CommandBuilder implements vshaxeDebug.ICommandBuilder {
 	public function new() {}
 
-	public function launch(program:String):String
-		return 'run $program';
+	public function launch():String
+		return 'run';
 
 	public function frameUp():String
 		return "up";

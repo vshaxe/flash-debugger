@@ -5,6 +5,7 @@ import vshaxeDebug.commands.BaseCommand;
 import protocol.debug.Types;
 import vshaxeDebug.PathUtils;
 import js.node.Fs;
+import js.node.ChildProcess;
 
 class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 	override public function execute() {
@@ -21,7 +22,12 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 			context.protocol.sendResponse(response);
 			return;
 		}
-		debugger.queueSend(cmd.launch(program), processResult);
+		debugger.queueSend(cmd.launch(), processResult);	
+		ChildProcess.exec('"$program"', function(error, _, _) {
+			if (error != null) {
+				context.sendToOutput(Std.string(error));
+			}
+		});
 		context.sendToOutput('running $program', OutputEventCategory.stdout);
 	}
 

@@ -1,7 +1,7 @@
 package vshaxeDebug;
 
 interface ICommandBuilder {
-	function launch(program:String):String;
+	function launch():String;
 	function frameUp():String;
 	function frameDown():String;
 	function stepIn():String;
