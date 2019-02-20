@@ -38,6 +38,10 @@
 	"scripts": {
 		"vscode:prepublish": "haxe build.hxml"
 	},
+	"main": "bin/extension.js",
+	"activationEvents": [
+		"onDebugResolve:fdb"
+	],
 	"contributes": {
 		"debuggers": [
 			{

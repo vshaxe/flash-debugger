@@ -2,4 +2,5 @@
 -cp test
 -lib utest
 -lib hxnodejs
+-lib vscode
 -lib vscode-debugadapter

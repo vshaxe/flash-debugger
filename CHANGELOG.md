@@ -1,5 +1,6 @@
 ### 1.2.2 (February 20, 2019)
 
+- fixed "Start Debugging" not doing anything without a `launch.json`
 - updated `${workspaceRoot}` to `${workspaceFolder}`
 
 ### 1.2.1 (February 4, 2019)

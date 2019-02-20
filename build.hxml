@@ -4,7 +4,15 @@
 -lib hxnodejs
 -js bin/fdb_adapter.js
 
+--next
+
+-cp src
+-lib vscode
+-js bin/extension.js
+Extension
+
 --next 
+
 -lib utest
 -lib vscode-debugadapter
 -main test.TestAll
