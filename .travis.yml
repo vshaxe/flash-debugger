@@ -7,6 +7,7 @@ install:
   - haxelib git vscode-debugadapter https://github.com/vshaxe/vscode-debugadapter-extern
   - haxelib install hxnodejs
   - haxelib install utest
+  - haxelib install vscode
 
 script:
   - haxe build.hxml
