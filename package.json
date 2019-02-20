@@ -59,7 +59,7 @@
 							"program": {
 								"type": "string",
 								"description": "full path to a swf file.",
-								"default": "${workspaceRoot}/bin/your.swf"
+								"default": "${workspaceFolder}/bin/your.swf"
 							},
 							"request": {
 								"type": "string",
@@ -93,7 +93,7 @@
 						"name": "Flash",
 						"type": "fdb",
 						"request": "launch",
-						"program": "${workspaceRoot}/bin/your.swf"
+						"program": "${workspaceFolder}/bin/your.swf"
 					}
 				]
 			}

@@ -7,11 +7,11 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}"
+				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"sourceMaps": true,
 			"outFiles": [
-				"${workspaceRoot}/bin/*.js"
+				"${workspaceFolder}/bin/*.js"
 			]
 		},
 		{
@@ -21,22 +21,22 @@
 			"runtimeArgs": [
 				"--nolazy"
 			],
-			"program": "${workspaceRoot}/bin/fdb_adapter.js",
+			"program": "${workspaceFolder}/bin/fdb_adapter.js",
 			"stopOnEntry": false,
 			"args": [
 				"--server=4711"
 			],
 			"sourceMaps": true,
 			"outFiles": [
-				"${workspaceRoot}/bin/*.js"
+				"${workspaceFolder}/bin/*.js"
 			],
-			"cwd": "${workspaceRoot}"
+			"cwd": "${workspaceFolder}"
 		},
 		{
 			"name": "Run Tests",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"runtimeArgs": [
 				"--nolazy"
 			],
@@ -50,9 +50,9 @@
 			],
 			"sourceMaps": true,
 			"outFiles": [
-				"${workspaceRoot}/bin/*.js"
+				"${workspaceFolder}/bin/*.js"
 			],
-			"cwd": "${workspaceRoot}"
+			"cwd": "${workspaceFolder}"
 		}
 	]
 }

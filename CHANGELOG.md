@@ -1,3 +1,7 @@
+### 1.2.2 (February 20, 2019)
+
+- updated `${workspaceRoot}` to `${workspaceFolder}`
+
 ### 1.2.1 (February 4, 2019)
 
 - fixed launch not working in some cases with spaces in program path ([#17](https://github.com/vshaxe/flash-debugger/issues/17))

@@ -29,7 +29,7 @@ After this, you need a launch configuration. The `launch.json` should look somet
             "name": "Flash",
             "type": "fdb",
             "request": "launch",
-            "program": "${workspaceRoot}/bin/application.swf"
+            "program": "${workspaceFolder}/bin/application.swf"
         }
     ]
 }
