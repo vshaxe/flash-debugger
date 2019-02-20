@@ -2,7 +2,7 @@
 -main fdbAdapter.Adapter
 -lib vscode-debugadapter
 -lib hxnodejs
--js bin/fdb_adapter.js
+-js bin/adapter.js
 
 --next
 

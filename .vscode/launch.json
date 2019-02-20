@@ -21,7 +21,7 @@
 			"runtimeArgs": [
 				"--nolazy"
 			],
-			"program": "${workspaceFolder}/bin/fdb_adapter.js",
+			"program": "${workspaceFolder}/bin/adapter.js",
 			"stopOnEntry": false,
 			"args": [
 				"--server=4711"

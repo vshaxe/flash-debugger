@@ -52,7 +52,7 @@
 						"haxe"
 					]
 				},
-				"program": "./bin/fdb_adapter.js",
+				"program": "./bin/adapter.js",
 				"runtime": "node",
 				"configurationAttributes": {
 					"launch": {
