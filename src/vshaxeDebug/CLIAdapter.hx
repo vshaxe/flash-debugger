@@ -1,6 +1,6 @@
 package vshaxeDebug;
 
-import js.Error;
+import js.lib.Error;
 import js.node.Buffer;
 import js.node.ChildProcess;
 import js.node.stream.Readable.ReadableEvent;

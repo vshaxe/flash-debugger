@@ -2,7 +2,7 @@ package test;
 
 import utest.Assert;
 import testSupport.DebugClient;
-import js.Promise;
+import js.lib.Promise;
 
 class AutomatedTests {
 	var dc:DebugClient;
