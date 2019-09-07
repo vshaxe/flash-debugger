@@ -49,18 +49,19 @@ private class DebuggerCommand {
 }
 
 class CLIAdapter implements IDebugger {
-	var config:CLIAdapterConfig;
-	var onPromptGot:Array<String>->Void;
-	var onError:Error->String;
-	var allOutputReceiver:String->Bool;
+	final config:CLIAdapterConfig;
+	final onPromptGot:Array<String>->Void;
+	final onError:Error->String;
+	final allOutputReceiver:String->Bool;
+
 	var proc:ChildProcessObject;
 	var buffer:Buffer;
 	var currentCommand:DebuggerCommand;
 	var queueHead:DebuggerCommand;
 	var queueTail:DebuggerCommand;
 
-	public var commandBuilder(default, null):ICommandBuilder;
-	public var parser(default, null):IParser;
+	public final commandBuilder:ICommandBuilder;
+	public final parser:IParser;
 
 	public function new(config:CLIAdapterConfig) {
 		this.config = config;
@@ -114,7 +115,7 @@ class CLIAdapter implements IDebugger {
 	}
 
 	function checkQueue() {
-		if ((currentCommand == null) && (queueHead != null)) {
+		if (currentCommand == null && queueHead != null) {
 			currentCommand = queueHead;
 			queueHead = currentCommand.next;
 			executeCurrentCommand();

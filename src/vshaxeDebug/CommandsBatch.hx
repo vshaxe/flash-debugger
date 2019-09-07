@@ -1,10 +1,10 @@
 package vshaxeDebug;
 
 class CommandsBatch {
+	final callback:Void->Void;
+	final debugger:IDebugger;
 	var waiting:Int;
 	var got:Int;
-	var callback:Void->Void;
-	var debugger:IDebugger;
 
 	public function new(debugger:IDebugger, callback:Void->Void) {
 		this.debugger = debugger;

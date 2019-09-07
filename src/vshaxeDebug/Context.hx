@@ -8,24 +8,25 @@ import vshaxeDebug.DebuggerState.StateController;
 import vshaxeDebug.DebuggerState.StateControlEvent;
 
 class Context {
-	public var variableHandles(default, null):Handles<String>;
-	public var knownObjects(default, null):Map<Int, String>;
-	public var sourcePath(default, default):String;
-	public var fileNameToFullPathDict(default, default):Map<String, String>;
-	public var breakpoints(default, null):Map<String, Array<Breakpoint>>;
-	public var debugger(default, null):IDebugger;
-	public var protocol(default, null):ProtocolServer;
+	public final debugger:IDebugger;
+	public final protocol:ProtocolServer;
+
+	public final breakpoints:Map<String, Array<Breakpoint>>;
+	public final fileNameToFullPathDict:Map<String, String>;
+	public final variableHandles:Handles<String>;
+	public final knownObjects:Map<Int, String>;
+
 	public var debuggerState(default, null):DebuggerState;
 
 	public function new(protocol:ProtocolServer, debugger:IDebugger) {
 		this.protocol = protocol;
 		this.debugger = debugger;
 
-		debuggerState = WaitingGreeting;
 		breakpoints = new Map<String, Array<Breakpoint>>();
 		fileNameToFullPathDict = new Map<String, String>();
 		variableHandles = new Handles<String>();
 		knownObjects = new Map<Int, String>();
+		debuggerState = WaitingGreeting;
 	}
 
 	public function onEvent(event:StateControlEvent) {
