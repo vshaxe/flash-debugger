@@ -1,13 +1,11 @@
 package vshaxeDebug;
 
-import adapter.Handles;
-import adapter.ProtocolServer;
-import protocol.debug.Types.Response;
-import protocol.debug.Types.Breakpoint;
-import protocol.debug.Types.OutputEventCategory;
+import vscode.debugAdapter.Handles;
+import vscode.debugAdapter.Protocol;
+import vscode.debugAdapter.DebugSession.OutputEvent as OutputEventImpl;
+import vscode.debugProtocol.DebugProtocol;
 import vshaxeDebug.EDebuggerState.StateController;
 import vshaxeDebug.EDebuggerState.EStateControlEvent;
-import adapter.DebugSession.OutputEvent as OutputEventImpl;
 
 class Context {
 	public var variableHandles(default, null):Handles<String>;
@@ -34,7 +32,7 @@ class Context {
 		debuggerState = StateController.onEvent(this, event);
 	}
 
-	public function sendToOutput(output:String, category:OutputEventCategory = OutputEventCategory.console) {
+	public function sendToOutput(output:String, category:OutputEventCategory = Console) {
 		protocol.sendEvent(new OutputEventImpl(output + "\n", category));
 	}
 

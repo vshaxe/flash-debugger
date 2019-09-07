@@ -1,9 +1,9 @@
 package vshaxeDebug;
 
-import protocol.debug.Types.StackFrame;
-import protocol.debug.Types.StopReason;
-import adapter.DebugSession.InitializedEvent;
-import adapter.DebugSession.StoppedEvent as StoppedEventImpl;
+import vscode.debugProtocol.DebugProtocol.StackFrame;
+import vscode.debugProtocol.DebugProtocol.StopReason;
+import vscode.debugAdapter.DebugSession.InitializedEvent;
+import vscode.debugAdapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
 enum EDebuggerState {
 	WaitingGreeting;

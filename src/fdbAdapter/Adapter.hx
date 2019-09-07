@@ -8,11 +8,10 @@ import vshaxeDebug.ICommandBuilder;
 import vshaxeDebug.IParser;
 import vshaxeDebug.PlatformParameters;
 import vshaxeDebug.commands.BaseCommand;
-import protocol.debug.Types;
-import adapter.DebugSession;
+import vscode.debugProtocol.DebugProtocol;
+import vscode.debugAdapter.DebugSession;
 import js.node.Fs;
 import haxe.ds.Option;
-import haxe.io.Path;
 
 class Adapter extends BaseAdapter {
 	static var logPath:String;
@@ -35,26 +34,18 @@ class Adapter extends BaseAdapter {
 		Fs.appendFile(logPath, haxe.Json.stringify(input) + "\n", 'utf8', function(e) {});
 	}
 
-	public function new() {
-		var deps:AdapterDependencies = {
-			createContext: createContext,
-			getLaunchCommand: getLaunchCommand,
-			getAttachCommand: getAttachCommand
-		};
-		super(deps);
-	}
-
-	function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
+	override function getLaunchCommand(context:Context, response:LaunchResponse,
+			args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 		return new fdbAdapter.commands.Launch(context, response, args);
 	}
 
-	function getAttachCommand(context:Context, response:AttachResponse, args:ExtAttachRequestArguments):Option<
-		BaseCommand<AttachResponse, ExtAttachRequestArguments>> {
+	override function getAttachCommand(context:Context, response:AttachResponse,
+			args:ExtAttachRequestArguments):Option<BaseCommand<AttachResponse, ExtAttachRequestArguments>> {
 		var command:BaseCommand<AttachResponse, ExtAttachRequestArguments> = new fdbAdapter.commands.Attach(context, response, args);
 		return Some(command);
 	}
 
-	function createContext(program:String):Context {
+	override function createContext(program:String):Context {
 		var scriptPath = js.Node.__dirname;
 		var commandBuilder:ICommandBuilder = new CommandBuilder();
 		var eolSign = PlatformParameters.getEndOfLineSign();
@@ -80,7 +71,7 @@ class Adapter extends BaseAdapter {
 		var path = "java";
 		var javaHome = Sys.getEnv("JAVA_HOME");
 		if (javaHome != null) {
-			path = Path.join([javaHome, "bin/java"]);
+			path = haxe.io.Path.join([javaHome, "bin/java"]);
 		}
 		return path;
 	}

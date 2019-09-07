@@ -1,7 +1,7 @@
 package test;
 
 import utest.Assert;
-import testSupport.DebugClient;
+import vscode.debugAdapter.testSupport.DebugClient;
 import js.lib.Promise;
 
 class AutomatedTests {

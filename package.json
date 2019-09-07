@@ -9,7 +9,7 @@
 		"name": "vshaxe"
 	},
 	"engines": {
-		"vscode": "^1.4.0"
+		"vscode": "^1.36.0"
 	},
 	"icon": "images/flash-logo.png",
 	"categories": [
@@ -32,8 +32,8 @@
 		"url": "https://github.com/vshaxe/flash-debugger/issues"
 	},
 	"dependencies": {
-		"vscode-debugprotocol": "1.8.0-pre.3",
-		"vscode-debugadapter": "1.8.0-pre.4"
+		"vscode-debugprotocol": "1.36.0",
+		"vscode-debugadapter": "1.36.0"
 	},
 	"scripts": {
 		"vscode:prepublish": "haxe build.hxml"
@@ -47,11 +47,6 @@
 			{
 				"type": "fdb",
 				"label": "Flash",
-				"enableBreakpointsFor": {
-					"languageIds": [
-						"haxe"
-					]
-				},
 				"program": "./bin/adapter.js",
 				"runtime": "node",
 				"configurationAttributes": {

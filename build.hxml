@@ -1,13 +1,14 @@
 -cp src
 -main fdbAdapter.Adapter
 -lib vscode-debugadapter
--lib hxnodejs
+-D js-es=6
 -js bin/adapter.js
 
 --next
 
 -cp src
 -lib vscode
+-D js-es=6
 -js bin/extension.js
 Extension
 
@@ -17,6 +18,7 @@ Extension
 -lib vscode-debugadapter
 -main test.TestAll
 -cp .
+-D js-es=6
 -js bin/test.js
 
 #--next

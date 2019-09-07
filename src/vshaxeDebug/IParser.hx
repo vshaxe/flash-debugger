@@ -1,6 +1,6 @@
 package vshaxeDebug;
 
-import protocol.debug.Types;
+import vscode.debugProtocol.DebugProtocol;
 import vshaxeDebug.Types;
 import haxe.ds.Option;
 

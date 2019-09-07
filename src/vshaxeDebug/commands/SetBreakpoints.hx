@@ -1,11 +1,10 @@
 package vshaxeDebug.commands;
 
-import adapter.DebugSession.Breakpoint as BreakpointImpl;
-import adapter.DebugSession.Source as SourceImpl;
-import haxe.ds.Option;
-import haxe.io.Path;
-import protocol.debug.Types;
+import vscode.debugAdapter.DebugSession.Breakpoint as BreakpointImpl;
+import vscode.debugAdapter.DebugSession.Source as SourceImpl;
+import vscode.debugProtocol.DebugProtocol;
 import vshaxeDebug.Types;
+import haxe.ds.Option;
 
 class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsArguments> {
 	var result:Array<Breakpoint>;
@@ -14,7 +13,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 		result = [];
 
 		if (args.source.name == null) {
-			args.source.name = Path.withoutDirectory(args.source.path);
+			args.source.name = haxe.io.Path.withoutDirectory(args.source.path);
 		}
 
 		var source = new SourceImpl(args.source.name, args.source.path);

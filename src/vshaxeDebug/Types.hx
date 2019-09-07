@@ -1,6 +1,6 @@
 package vshaxeDebug;
 
-import protocol.debug.Types;
+import vscode.debugProtocol.DebugProtocol;
 
 typedef VariableItem = {
 	var name:String;

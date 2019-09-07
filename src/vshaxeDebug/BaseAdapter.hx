@@ -1,31 +1,37 @@
 package vshaxeDebug;
 
-import protocol.debug.Types;
-import adapter.DebugSession;
-import adapter.DebugSession.Thread as ThreadImpl;
-import adapter.DebugSession.Scope as ScopeImpl;
+import vscode.debugProtocol.DebugProtocol;
+import vscode.debugAdapter.DebugSession;
+import vscode.debugAdapter.DebugSession.Thread as ThreadImpl;
+import vscode.debugAdapter.DebugSession.Scope as ScopeImpl;
 import vshaxeDebug.Types;
 import vshaxeDebug.commands.BaseCommand;
 import haxe.ds.Option;
 
-typedef AdapterDependencies = {
-	function createContext(program:String):Context;
-	function getLaunchCommand(context:Context, response:LaunchResponse, args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments>;
-	function getAttachCommand(context:Context, response:AttachResponse, args:ExtAttachRequestArguments):Option<
-		BaseCommand<AttachResponse, ExtAttachRequestArguments>>;
-}
-
-class BaseAdapter extends adapter.DebugSession {
+class BaseAdapter extends DebugSession {
 	var debugger:IDebugger;
 	var context:Context;
 	var cmd:ICommandBuilder;
 	var parser:IParser;
-	var deps:AdapterDependencies;
-	var terminated:Bool = false;
+	var terminated:Bool;
 
-	function new(deps:AdapterDependencies) {
+	function new() {
 		super();
-		this.deps = deps;
+		terminated = false;
+	}
+
+	function createContext(program:String):Context {
+		throw "not implemented";
+	}
+
+	function getLaunchCommand(context:Context, response:LaunchResponse,
+			args:ExtLaunchRequestArguments):BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
+		throw "not implemented";
+	}
+
+	function getAttachCommand(context:Context, response:AttachResponse,
+			args:ExtAttachRequestArguments):Option<BaseCommand<AttachResponse, ExtAttachRequestArguments>> {
+		throw "not implemented";
 	}
 
 	override function dispatchRequest(request:Request<Dynamic>) {
@@ -33,7 +39,7 @@ class BaseAdapter extends adapter.DebugSession {
 		super.dispatchRequest(request);
 	}
 
-	override function sendResponse(response:protocol.debug.Response<Dynamic>) {
+	override function sendResponse(response:Response<Dynamic>) {
 		trace('sendResponse: $response');
 		super.sendResponse(response);
 	}
@@ -47,27 +53,27 @@ class BaseAdapter extends adapter.DebugSession {
 
 	override function launchRequest(response:LaunchResponse, args:LaunchRequestArguments) {
 		var customArgs:ExtLaunchRequestArguments = cast args;
-		context = deps.createContext(customArgs.program);
+		context = createContext(customArgs.program);
 		debugger = context.debugger;
 		parser = context.debugger.parser;
 		cmd = context.debugger.commandBuilder;
 		if ((customArgs.receiveAdapterOutput != null) && (customArgs.receiveAdapterOutput)) {
 			redirectTraceToDebugConsole(context);
 		}
-		var launchCommand:BaseCommand<LaunchResponse, LaunchRequestArguments> = deps.getLaunchCommand(context, response, customArgs);
+		var launchCommand:BaseCommand<LaunchResponse, LaunchRequestArguments> = getLaunchCommand(context, response, customArgs);
 		launchCommand.execute();
 	}
 
 	override function attachRequest(response:AttachResponse, args:AttachRequestArguments) {
 		var customArgs:ExtLaunchRequestArguments = cast args;
-		context = deps.createContext(customArgs.program);
+		context = createContext(customArgs.program);
 		debugger = context.debugger;
 		parser = context.debugger.parser;
 		cmd = context.debugger.commandBuilder;
 		if ((customArgs.receiveAdapterOutput != null) && (customArgs.receiveAdapterOutput)) {
 			redirectTraceToDebugConsole(context);
 		}
-		var maybeAttachCommand:Option<BaseCommand<AttachResponse, AttachRequestArguments>> = deps.getAttachCommand(context, response, customArgs);
+		var maybeAttachCommand:Option<BaseCommand<AttachResponse, AttachRequestArguments>> = getAttachCommand(context, response, customArgs);
 		switch (maybeAttachCommand) {
 			case Some(attachCommand):
 				attachCommand.execute();
@@ -144,7 +150,7 @@ class BaseAdapter extends adapter.DebugSession {
 		stepRequest(cmd.next(), cast response);
 	}
 
-	function stepRequest<T>(cmd:String, response:protocol.debug.Response<T>) {
+	function stepRequest<T>(cmd:String, response:Response<T>) {
 		debugger.queueSend(cmd, function(_):Bool {
 			sendResponse(response);
 			sendEvent(new StoppedEvent("step", 1));
@@ -161,7 +167,7 @@ class BaseAdapter extends adapter.DebugSession {
 	override function pauseRequest(response:PauseResponse, args:PauseArguments) {
 		debugger.queueSend(cmd.pause(), function(_):Bool {
 			sendResponse(response);
-			context.onEvent(Stop(StopReason.pause));
+			context.onEvent(Stop(StopReason.Pause));
 			return true;
 		});
 	}
@@ -187,9 +193,9 @@ class BaseAdapter extends adapter.DebugSession {
 
 			case EDebuggerState.Running:
 				if (parser.isStopOnBreakpointMatched(lines)) {
-					context.onEvent(Stop(StopReason.breakpoint));
+					context.onEvent(Stop(StopReason.Breakpoint));
 				} else if (parser.isStopOnExceptionMatched(lines)) {
-					context.onEvent(Stop(StopReason.exception));
+					context.onEvent(Stop(StopReason.Exception));
 				}
 			case _:
 		}
@@ -224,7 +230,7 @@ class BaseAdapter extends adapter.DebugSession {
 
 	function redirectTraceToDebugConsole(context:Context) {
 		haxe.Log.trace = function(v, ?i) {
-			context.sendToOutput('DebugAdapter: $v', OutputEventCategory.stdout);
+			context.sendToOutput('DebugAdapter: $v', OutputEventCategory.Stdout);
 		}
 	}
 }

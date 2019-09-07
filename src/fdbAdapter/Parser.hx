@@ -1,7 +1,7 @@
 package fdbAdapter;
 
 import vshaxeDebug.Types;
-import protocol.debug.Types;
+import vscode.debugProtocol.DebugProtocol;
 import haxe.ds.Option;
 
 class Parser implements vshaxeDebug.IParser {

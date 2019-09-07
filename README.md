@@ -50,7 +50,7 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
     ```hxml
     npm install
     haxelib install hxnodejs
-    haxelib git vscode-debugadapter https://github.com/vshaxe/vscode-debugadapter-extern
+    haxelib install vscode-debugadapter
     ```
 
 5. Do `haxe build.hxml`

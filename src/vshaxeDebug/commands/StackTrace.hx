@@ -1,6 +1,6 @@
 package vshaxeDebug.commands;
 
-import protocol.debug.Types;
+import vscode.debugProtocol.DebugProtocol;
 import vshaxeDebug.Types;
 
 class StackTrace extends BaseCommand<StackTraceResponse, StackTraceArguments> {

@@ -2,7 +2,7 @@ package fdbAdapter.commands;
 
 import vshaxeDebug.Types;
 import vshaxeDebug.commands.BaseCommand;
-import protocol.debug.Types;
+import vscode.debugProtocol.DebugProtocol;
 import vshaxeDebug.PathUtils;
 import js.node.Fs;
 import js.node.ChildProcess;
@@ -22,13 +22,13 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 			context.protocol.sendResponse(response);
 			return;
 		}
-		debugger.queueSend(cmd.launch(), processResult);	
+		debugger.queueSend(cmd.launch(), processResult);
 		ChildProcess.exec('"$program"', function(error, _, _) {
 			if (error != null) {
 				context.sendToOutput(Std.string(error));
 			}
 		});
-		context.sendToOutput('running $program', OutputEventCategory.stdout);
+		context.sendToOutput('running $program', OutputEventCategory.Stdout);
 	}
 
 	function processResult(lines:Array<String>):Bool {
@@ -37,7 +37,7 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 		for (line in lines) {
 			if (matchSWFConnected(line)) {
 				context.protocol.sendResponse(response);
-				context.sendToOutput("launch success", OutputEventCategory.stdout);
+				context.sendToOutput("launch success", OutputEventCategory.Stdout);
 				return true;
 			}
 		}
