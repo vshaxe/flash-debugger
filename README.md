@@ -49,7 +49,8 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
 
     ```hxml
     npm install
-    haxelib install hxnodejs
+    haxelib install utest
+    haxelib install vscode
     haxelib install vscode-debugadapter
     ```
 
