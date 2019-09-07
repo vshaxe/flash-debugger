@@ -5,14 +5,14 @@ import vscode.debugProtocol.DebugProtocol.StopReason;
 import vscode.debugAdapter.DebugSession.InitializedEvent;
 import vscode.debugAdapter.DebugSession.StoppedEvent as StoppedEventImpl;
 
-enum EDebuggerState {
+enum DebuggerState {
 	WaitingGreeting;
 	Configuring;
 	Running;
 	Stopped(frames:Array<StackFrame>, currentFrame:Int);
 }
 
-enum EStateControlEvent {
+enum StateControlEvent {
 	GreetingReceived;
 	Continue;
 	Stop(reason:StopReason);
@@ -22,7 +22,7 @@ enum EStateControlEvent {
 }
 
 class StateController {
-	public static function onEvent(context:Context, event:EStateControlEvent):EDebuggerState {
+	public static function onEvent(context:Context, event:StateControlEvent):DebuggerState {
 		var protocol = context.protocol;
 		var currentState = context.debuggerState;
 

@@ -5,7 +5,7 @@ import vscode.debugProtocol.DebugProtocol;
 import haxe.ds.Option;
 
 class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
-	var scope:EScope;
+	var scope:ScopeType;
 	var result:Array<Variable>;
 
 	override public function execute() {
@@ -69,7 +69,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
 		return true;
 	}
 
-	function getScopeOfHandle(handleId:String):EScope {
+	function getScopeOfHandle(handleId:String):ScopeType {
 		var parts:Array<String> = handleId.split("_");
 		var prefix = parts[0];
 
@@ -89,7 +89,7 @@ class Variables extends BaseCommand<VariablesResponse, VariablesArguments> {
 		}
 	}
 
-	function getFramesDiff(scope:EScope):Int {
+	function getFramesDiff(scope:ScopeType):Int {
 		var frameId:Option<Int> = switch (scope) {
 			case Locals(frameId, _):
 				Some(frameId);

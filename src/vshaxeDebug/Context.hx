@@ -4,8 +4,8 @@ import vscode.debugAdapter.Handles;
 import vscode.debugAdapter.Protocol;
 import vscode.debugAdapter.DebugSession.OutputEvent as OutputEventImpl;
 import vscode.debugProtocol.DebugProtocol;
-import vshaxeDebug.EDebuggerState.StateController;
-import vshaxeDebug.EDebuggerState.EStateControlEvent;
+import vshaxeDebug.DebuggerState.StateController;
+import vshaxeDebug.DebuggerState.StateControlEvent;
 
 class Context {
 	public var variableHandles(default, null):Handles<String>;
@@ -15,7 +15,7 @@ class Context {
 	public var breakpoints(default, null):Map<String, Array<Breakpoint>>;
 	public var debugger(default, null):IDebugger;
 	public var protocol(default, null):ProtocolServer;
-	public var debuggerState(default, null):EDebuggerState;
+	public var debuggerState(default, null):DebuggerState;
 
 	public function new(protocol:ProtocolServer, debugger:IDebugger) {
 		this.protocol = protocol;
@@ -28,7 +28,7 @@ class Context {
 		knownObjects = new Map<Int, String>();
 	}
 
-	public function onEvent(event:EStateControlEvent) {
+	public function onEvent(event:StateControlEvent) {
 		debuggerState = StateController.onEvent(this, event);
 	}
 

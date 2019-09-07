@@ -185,13 +185,13 @@ class BaseAdapter extends DebugSession {
 
 	function onPromptGot(lines:Array<String>) {
 		switch (context.debuggerState) {
-			case EDebuggerState.WaitingGreeting:
+			case WaitingGreeting:
 				if (parser.isGreetingMatched(lines)) {
 					context.onEvent(GreetingReceived);
 				} else
 					trace('Start FAILED: [$lines]');
 
-			case EDebuggerState.Running:
+			case Running:
 				if (parser.isStopOnBreakpointMatched(lines)) {
 					context.onEvent(Stop(StopReason.Breakpoint));
 				} else if (parser.isStopOnExceptionMatched(lines)) {
@@ -213,7 +213,7 @@ class BaseAdapter extends DebugSession {
 		}
 
 		switch (context.debuggerState) {
-			case EDebuggerState.Running:
+			case Running:
 				var lines:Array<String> = parser.getTraces(string);
 				for (line in lines) {
 					context.sendToOutput(line);

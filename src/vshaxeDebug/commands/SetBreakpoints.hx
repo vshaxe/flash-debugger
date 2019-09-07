@@ -28,7 +28,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 		var batch = new CommandsBatch(context.debugger, commandDoneCallback.bind(pathKey, response));
 
 		switch (context.debuggerState) {
-			case EDebuggerState.Running:
+			case Running:
 				batch.add(cmd.pause(), function(_):Bool {
 					return true;
 				});
@@ -51,7 +51,7 @@ class SetBreakpoints extends BaseCommand<SetBreakpointsResponse, SetBreakpointsA
 		}
 
 		switch (context.debuggerState) {
-			case EDebuggerState.Running:
+			case Running:
 				batch.add(cmd.continueCommand());
 			default:
 		}

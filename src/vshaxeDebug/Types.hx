@@ -31,7 +31,7 @@ abstract ScopeLocalsType(Int) {
 	var LocalVariables = 3;
 }
 
-enum EScope {
+enum ScopeType {
 	Locals(frameId:Int, type:ScopeLocalsType);
 	Global(frameId:Int);
 	Closure(frameId:Int);
