@@ -1,3 +1,7 @@
+### 1.2.3 (September 11, 2019)
+
+- fixed compatibility with macOS ([#23](https://github.com/vshaxe/flash-debugger/issues/23))
+
 ### 1.2.2 (February 20, 2019)
 
 - fixed "Start Debugging" not doing anything without a `launch.json`
