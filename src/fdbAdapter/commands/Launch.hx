@@ -23,7 +23,8 @@ class Launch extends BaseCommand<LaunchResponse, ExtLaunchRequestArguments> {
 			return;
 		}
 		debugger.queueSend(cmd.launch(), processResult);
-		ChildProcess.exec('"$program"', function(error, _, _) {
+		var command = if (Sys.systemName() == "Mac") 'open "$program"' else '"$program"';
+		ChildProcess.exec(command, function(error, _, _) {
 			if (error != null) {
 				context.sendToOutput(Std.string(error));
 			}
