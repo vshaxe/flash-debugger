@@ -1,8 +1,9 @@
 {
-	"haxe.displayConfigurations": [
+	"haxe.configurations": [
 		["display.hxml"]
 	],
 	"[haxe]": {
-		"editor.formatOnSave": true
+		"editor.formatOnSave": true,
+		"editor.formatOnPaste": true
 	}
 }
