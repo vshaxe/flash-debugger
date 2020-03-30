@@ -1,5 +1,5 @@
 # Flash Debugger
-[![Build Status](https://travis-ci.org/vshaxe/flash-debugger.svg?branch=master)](https://travis-ci.org/vshaxe/flash-debugger) [![Version](https://vsmarketplacebadge.apphb.com/version-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug)
+[![CI](https://img.shields.io/github/workflow/status/vshaxe/flash-debugger/CI.svg?logo=github)](https://github.com/vshaxe/flash-debugger/actions?query=workflow%3ACI) [![Version](https://vsmarketplacebadge.apphb.com/version-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vshaxe.haxe-debug.svg)](https://marketplace.visualstudio.com/items?itemName=vshaxe.haxe-debug)
 
 This is an extension for debugging Haxe applications on the Flash target via [FDB][1]. It is best used with the [vshaxe][2] extension.
 
@@ -45,16 +45,8 @@ You can also generate a config via `Add Configuration...` -> `Haxe (Flash)`:
 1. Navigate to the extensions folder (`C:\Users\<username>\.vscode\extensions` on Windows, `~/.vscode/extensions` otherwise)
 2. Clone this repo: `git clone https://github.com/vshaxe/flash-debugger`
 3. Change current directory to the cloned one: `cd flash-debugger`.
-4. Install dependencies:
-
-    ```hxml
-    npm install
-    haxelib install utest
-    haxelib install vscode
-    haxelib install vscode-debugadapter
-    ```
-
-5. Do `haxe build.hxml`
+4. Install dependencies: `npm install`
+5. Do `npx haxe build.hxml`
 
    [1]: http://help.adobe.com/en_US/flex/using/WS2db454920e96a9e51e63e3d11c0bf69084-7ffb.html
    [2]: https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe
